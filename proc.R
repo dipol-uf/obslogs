@@ -33,7 +33,7 @@ get_date_comment <- function(str) {
     "^\\s*(\\d{1,2})\\s*[/7]\\s*(\\d{1,2})\\s*[/7]\\s*(\\d{1,2})\\s*(.*)\\s*$"
   ) |>
     magrittr::extract(, -1L) -> parsed
-
+  
   list(
     Date = lubridate::dmy(paste(parsed[1], parsed[2], parsed[3], sep = "/")),
     Comment = stringr::str_to_sentence(parsed[4])
@@ -41,7 +41,7 @@ get_date_comment <- function(str) {
 }
 
 exp_time_pattern <- "~?((?:\\d+|\\d+[\\.,]\\d+)(?:\\s+sec)?)"
-obj_name_pattern <- "([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)"
+obj_name_pattern <- "([\\w\\+\\.]+(?:\\s{1,3}[\\w\\+\\.]+)?)"#"([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)"
 dp2_pattern_1 <- paste0(
   "^\\s*",
   "(?:\\*(?:[Nn]ot|[Aa]lso\\s*not)\\*\\s*)?",
@@ -102,14 +102,14 @@ get_objects <- function(str) {
   parse_with_pattern(
       str,
       dp2_pattern_1,
-      c("Object", "Focus", "N", "ExpTime", "Type")
+      c("Object", "Focus", "N", "ExpTime", "Description")
   ) -> match
 
   if (all(is.na(match))) {
     parse_with_pattern(
         str,
         dp2_pattern_2,
-        c("Object", "ExpTime", "Focus", "N", "Type")
+        c("Object", "ExpTime", "Focus", "N", "Description")
     ) -> match
   }
 
@@ -117,12 +117,12 @@ get_objects <- function(str) {
      parse_with_pattern(
         str,
         dp2_pattern_3,
-        c("Object", "Focus", "ExpTime", "Type")
+        c("Object", "Focus", "ExpTime", "Description")
     ) -> match
   }
   match <- match |>
-    dplyr::filter(!is.na(DISCARD)) |>
-    dplyr::select(-DISCARD)
+    dplyr::filter(!is.na(DISCARD)) #|>
+    # dplyr::select(-DISCARD)
 
   list(Objects = match, Comments = comments)
 }
@@ -140,29 +140,36 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     purrr::map(stringr::str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
 
   nights |>
-    vctrs::vec_slice(100:103) |>
-    purrr::map(function(x) {
+    # vctrs::vec_slice(100:103) |>
+    purrr::map_dfr(function(x) {
       dt_cm <- get_date_comment(x)
       obj_cm <-  get_objects(x)
       cm <- c(dt_cm$Comment, obj_cm$Comments)
       cm <- vctrs::vec_slice(cm, nzchar(cm)) |>
         paste(collapse = "; ")
 
-      list(
-        Objects = dplyr::mutate(
+      data <- dplyr::mutate(
           obj_cm$Objects,
           Date = dt_cm$Date,
           .before = dplyr::everything()
-        ),
-        Comments = cm
-      )
-    })
+        )
+      # Currently not using comments
+      data
+    }) |>
+    dplyr::mutate(
+      Focus = Focus |>
+        stringr::str_replace("=", "-") |>
+        readr::parse_double(),
+      N = readr::parse_integer(N),
+      ExpTime = ExpTime |>
+        stringr::str_replace("\\s*sec", "")
+    )
 
 }
 
 
 get_dp2_obs() |>
   # dplyr::filter(!is.na(DISCARD)) |>
-  print()# |>
+  print() -> data# |>
   # readr::write_csv("test.csv")
 #   # print(n = 300)
