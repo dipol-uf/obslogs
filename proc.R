@@ -25,6 +25,7 @@ get_duf_obs <- function(duf_log_path = duf_log) {
     dplyr::filter(!is.na(Object))
 }
 
+
 get_date_comment <- function(str) {
   str <- vctrs::vec_slice(str, 1L)
   stringr::str_match(
@@ -32,12 +33,14 @@ get_date_comment <- function(str) {
     "^\\s*(\\d{1,2})\\s*[/7]\\s*(\\d{1,2})\\s*[/7]\\s*(\\d{1,2})\\s*(.*)\\s*$"
   ) |>
     magrittr::extract(, -1L) -> parsed
-  return(parsed)
+
   tibble::tibble(
     Date = lubridate::dmy(paste(parsed[1], parsed[2], parsed[3], sep = "/")),
     Comment = stringr::str_to_sentence(parsed[4])
   )
 }
+
+exp_time_pattern <- "~?((?:\\d+|\\d+[\\.,]\\d+)(?:\\s+sec)?)"
 
 dp2_pattern_1 <- paste0(
   "^\\s*",
@@ -48,7 +51,7 @@ dp2_pattern_1 <- paste0(
   "\\s+",
   "(\\d+(?:/\\d+)?)",                          # N
   "\\s+",
-  "(\\d+|\\d+[\\.,]\\d+)",                     # ExpTime
+  exp_time_pattern,                            # ExpTime
   "(?:\\s+([\\w -]+))?"                        # Type
 )
 
@@ -56,11 +59,11 @@ dp2_pattern_2 <- paste0(
   "^\\s*",
   "([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)", # Object name
   "\\s+",
-  "(\\d+|\\d+[\\.,]\\d+|\\d+-\\d+)",           #ExpTime
+  exp_time_pattern,                            # ExpTime
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "(?:\\s+(\\d+(?:/\\d+)?))?",                 # N
-  "(?:\\s+([\\w -]+))?"                         # Type
+  "(?:\\s+([\\w -]+))?"                        # Type
 )
 
 dp2_pattern_3 <- paste0(
@@ -69,18 +72,25 @@ dp2_pattern_3 <- paste0(
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "\\s+",
-  "~?(\\d+|\\d+[\\.,]\\d+)",                    # ExpTime
+  exp_time_pattern,                            # ExpTime
   "(?:\\s+([\\w -]+))?"                         # Type
 )
 
-get_objects <- function(
-  str,
+parse_with_pattern <- function(
+  txt, pattern, names
+) {
+  txt |>
+    stringr::str_match(pattern) |>
+    tibble::as_tibble(.name_repair = "minimal") |>
+    rlang::set_names(c("DISCARD", names))
+}
+
+get_objects <- function(str) {
   patterns = vctrs::vec_c(
     dp2_pattern_1,
     dp2_pattern_2,
     dp2_pattern_3
   )
-) {
   str <- vctrs::vec_slice(str, -1L) |>
     stringr::str_replace("\\t", " ")
 
@@ -88,8 +98,29 @@ get_objects <- function(
     purrr::reduce(stringr::str_subset, negate = TRUE, .init = str) |>
     stringr::str_trim()  -> comments
 
-  # list(objects = objects, comments = comments)
-  comments
+  parse_with_pattern(
+      str,
+      dp2_pattern_1,
+      c("Object", "Focus", "N", "ExpTime", "Type")
+  ) -> match
+
+  if (all(is.na(match))) {
+    parse_with_pattern(
+        str,
+        dp2_pattern_2,
+        c("Object", "ExpTime", "Focus", "N", "Type")
+    ) -> match
+  }
+
+  if (all(is.na(match))) {
+     parse_with_pattern(
+        str,
+        dp2_pattern_3,
+        c("Object", "Focus", "ExpTime", "Type")
+    ) -> match
+  }
+
+  list(objects = match, comments = comments)
 }
 
 get_dp2_obs <- function(dp2_log_path = dp2_log) {
@@ -105,12 +136,13 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     purrr::map(stringr::str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
 
   nights |>
-    vctrs::vec_slice(1:200) |>
-    purrr::map(get_date_comment) 
+    # vctrs::vec_slice(100:103) |>
+    purrr::map(get_objects) |>
+    purrr::map_dfr(~.x$objects)
 
 }
 
 
 get_dp2_obs() |>
-   print()
+   print() -> data
 #   # print(n = 300)
