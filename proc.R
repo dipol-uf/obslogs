@@ -181,14 +181,46 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
       ExpTime = dplyr::if_else(ExpTime > 1800, NA_real_, ExpTime),
       Instrument = forcats::as_factor("DIPol-2"),
       Telescope = forcats::as_factor("T60")
-    )
+    ) -> result
 
+    which(is.na(result[["Date"]])) -> na_dates
+
+    vctrs::vec_c(0L, which(diff(na_dates) != 1L), length(na_dates)) -> na_groups
+    purrr::map2(
+      na_groups[-length(na_groups)] + 1L,
+      na_groups[-1],
+      ~list(
+        Start = na_dates[.x],
+        End = na_dates[.y],
+        Value = lubridate::ymd("1970/01/01") +
+          lubridate::days(
+            0.5 * (
+              unclass(result[["Date"]][na_dates[.x] - 1L]) +
+              unclass(result[["Date"]][na_dates[.y] + 1L])
+            )
+          )
+      )
+    ) -> na_gaps
+
+    new_dates <- vctrs::vec_init(result[["Date"]], vctrs::vec_size(result))
+    for (item in na_gaps) {
+      vctrs::vec_slice(
+        new_dates, 
+        seq(from = item[["Start"]], to = item[["End"]])
+      ) <- item[["Value"]]
+    }
+
+  result |>
+    dplyr::mutate(
+      Date = dplyr::if_else(is.na(Date), new_dates, Date)
+    )
 }
 
 dplyr::bind_rows(
-  get_duf_obs(),
-  get_dp2_obs()
-) -> data
+  get_duf_obs() -> data1,
+  get_dp2_obs() -> data2
+) |>
+  dplyr::arrange(Date) -> data
   # print() -> data_2
 
 # get_dp2_obs() |>
