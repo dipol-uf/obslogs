@@ -14,13 +14,15 @@ get_duf_obs <- function(duf_log_path = duf_log) {
       "text"
     )) |>
     dplyr::transmute(
-      Night = Date,
+      Date = lubridate::as_date(Date),
       Type = forcats::as_factor(Type),
-      Object = forcats::as_factor(`Star name`),
-      Exptime = `Exposure time`,
-      N = !!as.name("# observations"),
+      Object = `Star name`,
+      ExpTime = `Exposure time` |> readr::parse_double(),
+      N = (!!as.name("# observations")) |> readr::parse_integer(),
       Focus,
-      Comment = Comments
+      Comment = Comments,
+      Instrument = forcats::as_factor("DIPol-UF"),
+      Telescope = forcats::as_factor("NOT")
     ) |>
     dplyr::filter(!is.na(Object))
 }
@@ -120,9 +122,11 @@ get_objects <- function(str) {
         c("Object", "Focus", "ExpTime", "Description")
     ) -> match
   }
+
+
   match <- match |>
-    dplyr::filter(!is.na(DISCARD)) #|>
-    # dplyr::select(-DISCARD)
+    dplyr::filter(!is.na(DISCARD)) |>
+    dplyr::select(-DISCARD)
 
   list(Objects = match, Comments = comments)
 }
@@ -140,7 +144,6 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     purrr::map(stringr::str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
 
   nights |>
-    # vctrs::vec_slice(100:103) |>
     purrr::map_dfr(function(x) {
       dt_cm <- get_date_comment(x)
       obj_cm <-  get_objects(x)
@@ -152,24 +155,45 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
           obj_cm$Objects,
           Date = dt_cm$Date,
           .before = dplyr::everything()
-        )
+        ) |>
+        dplyr::mutate(Comment = cm)
       # Currently not using comments
       data
     }) |>
     dplyr::mutate(
       Focus = Focus |>
         stringr::str_replace("=", "-") |>
+        stringr::str_replace(",", ".") |>
+        stringr::str_replace("-{2,}|n/a", NA_character_) |>
         readr::parse_double(),
-      N = readr::parse_integer(N),
+      N = N |> 
+        strsplit("/") |>
+        purrr::map(readr::parse_integer) |>
+        purrr::map_int(sum),
       ExpTime = ExpTime |>
-        stringr::str_replace("\\s*sec", "")
+        stringr::str_replace("\\s*sec", "") |>
+        readr::parse_double(),
+      Object = dplyr::if_else(
+        ExpTime > 1800,
+        paste(Object, ExpTime),
+        Object
+      ),
+      ExpTime = dplyr::if_else(ExpTime > 1800, NA_real_, ExpTime),
+      Instrument = forcats::as_factor("DIPol-2"),
+      Telescope = forcats::as_factor("T60")
     )
 
 }
 
+dplyr::bind_rows(
+  get_duf_obs(),
+  get_dp2_obs()
+) -> data
+  # print() -> data_2
 
-get_dp2_obs() |>
-  # dplyr::filter(!is.na(DISCARD)) |>
-  print() -> data# |>
-  # readr::write_csv("test.csv")
-#   # print(n = 300)
+# get_dp2_obs() |>
+#   # View()
+#   # dplyr::filter(!is.na(DISCARD)) |>
+#   print() |>
+#   readr::write_csv("test.csv")
+# #   # print(n = 300)
