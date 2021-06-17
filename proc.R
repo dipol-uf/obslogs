@@ -34,18 +34,18 @@ get_date_comment <- function(str) {
   ) |>
     magrittr::extract(, -1L) -> parsed
 
-  tibble::tibble(
+  list(
     Date = lubridate::dmy(paste(parsed[1], parsed[2], parsed[3], sep = "/")),
     Comment = stringr::str_to_sentence(parsed[4])
   )
 }
 
 exp_time_pattern <- "~?((?:\\d+|\\d+[\\.,]\\d+)(?:\\s+sec)?)"
-
+obj_name_pattern <- "([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)"
 dp2_pattern_1 <- paste0(
   "^\\s*",
   "(?:\\*(?:[Nn]ot|[Aa]lso\\s*not)\\*\\s*)?",
-  "([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)", # Object name
+  obj_name_pattern,                            # Object name
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "\\s+",
@@ -57,7 +57,7 @@ dp2_pattern_1 <- paste0(
 
 dp2_pattern_2 <- paste0(
   "^\\s*",
-  "([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)", # Object name
+  obj_name_pattern,                            # Object name
   "\\s+",
   exp_time_pattern,                            # ExpTime
   "\\s+",
@@ -68,12 +68,12 @@ dp2_pattern_2 <- paste0(
 
 dp2_pattern_3 <- paste0(
   "^\\s*",
-  "([\\w\\+\\.]+|[\\w\\+]+\\s{1,3}[\\w\\+]+)", # Object name
+  obj_name_pattern,                            # Object name
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "\\s+",
   exp_time_pattern,                            # ExpTime
-  "(?:\\s+([\\w -]+))?"                         # Type
+  "(?:\\s+([\\w -]+))?"                        # Type
 )
 
 parse_with_pattern <- function(
@@ -96,7 +96,8 @@ get_objects <- function(str) {
 
   patterns |>
     purrr::reduce(stringr::str_subset, negate = TRUE, .init = str) |>
-    stringr::str_trim()  -> comments
+    stringr::str_trim() |>
+    stringr::str_to_sentence() -> comments
 
   parse_with_pattern(
       str,
@@ -119,8 +120,11 @@ get_objects <- function(str) {
         c("Object", "Focus", "ExpTime", "Type")
     ) -> match
   }
+  match <- match |>
+    dplyr::filter(!is.na(DISCARD)) |>
+    dplyr::select(-DISCARD)
 
-  list(objects = match, comments = comments)
+  list(Objects = match, Comments = comments)
 }
 
 get_dp2_obs <- function(dp2_log_path = dp2_log) {
@@ -136,13 +140,29 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     purrr::map(stringr::str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
 
   nights |>
-    # vctrs::vec_slice(100:103) |>
-    purrr::map(get_objects) |>
-    purrr::map_dfr(~.x$objects)
+    vctrs::vec_slice(100:103) |>
+    purrr::map(function(x) {
+      dt_cm <- get_date_comment(x)
+      obj_cm <-  get_objects(x)
+      cm <- c(dt_cm$Comment, obj_cm$Comments)
+      cm <- vctrs::vec_slice(cm, nzchar(cm)) |>
+        paste(collapse = "; ")
+
+      list(
+        Objects = dplyr::mutate(
+          obj_cm$Objects,
+          Date = dt_cm$Date,
+          .before = dplyr::everything()
+        ),
+        Comments = cm
+      )
+    })
 
 }
 
 
 get_dp2_obs() |>
-   print() -> data
+  # dplyr::filter(!is.na(DISCARD)) |>
+  print()# |>
+  # readr::write_csv("test.csv")
 #   # print(n = 300)
