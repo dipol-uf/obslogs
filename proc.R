@@ -212,7 +212,12 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
 
   result |>
     dplyr::mutate(
-      Date = dplyr::if_else(is.na(Date), new_dates, Date)
+      Date = dplyr::if_else(is.na(Date), new_dates, Date),
+      Date = dplyr::if_else(
+        Date < lubridate::ymd("2010/01/01"),
+        Date + lubridate::years(10L),
+        Date
+      )
     )
 }
 
@@ -220,12 +225,22 @@ dplyr::bind_rows(
   get_duf_obs() -> data1,
   get_dp2_obs() -> data2
 ) |>
+  dplyr::transmute(
+    Date, Object, Type, ExpTime, N, Focus, 
+    Inst = Instrument,
+    Tlscp = Telescope,
+    Comment
+  ) |>
   dplyr::arrange(Date) -> data
-  # print() -> data_2
+  
 
-# get_dp2_obs() |>
-#   # View()
-#   # dplyr::filter(!is.na(DISCARD)) |>
-#   print() |>
-#   readr::write_csv("test.csv")
-# #   # print(n = 300)
+data |>
+  readr::write_csv("log.csv")
+data |>
+  dplyr::select(-Comment) |>
+  RLibs::write_fixed(
+    "log.txt",
+    frmt = c(
+      "%12s", "%16s", "%20s", "%10g", "%10d", "%10g", "%10s", "%8s"
+    )
+  )
