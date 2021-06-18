@@ -32,7 +32,7 @@ jobs:
             "future",
             "furrr",
             "readr",
-            "forcats"
+            "forcats",
             "parallel",
             "jsonlite",
             "fs",
