@@ -106,16 +106,3 @@ write_fixed <- function(data, file, formats = NULL) {
   ) |>
   brio::write_lines(file)
 }
-
-# sprintf("%1$-+0# 16.6f", pi) |> print()
-
-# data |>
-#   vctrs::vec_slice(100:200) |>
-#   write_fixed(
-#     file = "test.txt",
-#     formats = c(
-#       Comment = "%1$8s", Date = "%8s", Focus = "%f"
-#     )
-#   ) |>
-#   print()
-
