@@ -68,7 +68,7 @@ parse_with_pattern <- function(
     tibble::as_tibble(.name_repair = "minimal") |>
     rlang::set_names(c("DISCARD", names)) |>
     dplyr::mutate(
-      Id = 1:dplyr::n(), 
+      Id = seq_len(dplyr::n()),
       MatchId = id,
       .before = dplyr::everything()
     )
@@ -139,15 +139,24 @@ get_objects <- function(str) {
                ~is.na(.x) * .y
             ) |> sum()
 
-          n_exp_time <- nchar(args$ExpTime)
+          n_exp_time <- nchar(stringr::str_replace(args$ExpTime, "\\s*sec", ""))
           if (vctrs::vec_is_empty(n_exp_time) || rlang::is_na(n_exp_time)) {
             n_exp_time <- 2L
           }
-
-          result + n_exp_time
+          
+          if (
+            rlang::is_na(args$ExpTime) &&
+            rlang::is_na(args$N) && 
+            rlang::is_na(args$Description)
+          ) {
+            .Machine$integer.max
+          } else {
+            result + n_exp_time
+          }
         }
       )
     ) -> match
+
 
   match |>
     dplyr::group_split(Id) |>
@@ -156,10 +165,13 @@ get_objects <- function(str) {
       Test == min(Test)
     ) |>
     purrr::map(dplyr::arrange, MatchId) |>
-    purrr::map_dfr(vctrs::vec_slice, 1L) -> match
+    purrr::map_dfr(vctrs::vec_slice, 1L)  -> match
 
-  match <- match |>
-    dplyr::select(-DISCARD, -Id, -MatchId, -Test)
+  if (vctrs::vec_size(match) != 0L) {
+    match <- match |>
+      dplyr::filter(Test < .Machine$integer.max) |>
+      dplyr::select(-DISCARD, -Id, -MatchId, -Test)
+  }
 
   list(Objects = match, Comments = comments)
 }
@@ -177,27 +189,31 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     purrr::map(stringr::str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
 
   nights |>
-    purrr::map_dfr(function(x) {
-      dt_cm <- get_date_comment(x)
-      obj_cm <-  get_objects(x)
-      cm <- c(dt_cm$Comment, obj_cm$Comments)
-      cm <- vctrs::vec_slice(cm, nzchar(cm)) |>
-        paste(collapse = "; ")
+    furrr::future_map_dfr(
+    # purrr::map_dfr(
+      function(x) {
+        dt_cm <- get_date_comment(x)
+        obj_cm <-  get_objects(x)
+        cm <- c(dt_cm$Comment, obj_cm$Comments)
+        cm <- vctrs::vec_slice(cm, nzchar(cm)) |>
+          paste(collapse = "; ")
 
-      data <- dplyr::mutate(
-          obj_cm$Objects,
-          Date = dt_cm$Date,
-          .before = dplyr::everything()
-        ) |>
-        dplyr::mutate(Comment = cm)
+        data <- dplyr::mutate(
+            obj_cm$Objects,
+            Date = dt_cm$Date,
+            .before = dplyr::everything()
+          ) |>
+          dplyr::mutate(Comment = cm)
 
-      data
-    }) |>
+        data
+      }
+      ,.progress = TRUE
+    ) |>
     dplyr::mutate(
       Focus = Focus |>
         stringr::str_replace("=", "-") |>
         stringr::str_replace(",", ".") |>
-        stringr::str_replace("-{2,}|n/a", NA_character_) |>
+        stringr::str_replace("^-+$|n/a", NA_character_) |>
         readr::parse_double(),
       N = N |> 
         strsplit("/") |>
@@ -219,7 +235,7 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     which(is.na(result[["Date"]])) -> na_dates
     if (!vctrs::vec_is_empty(na_dates)) {
       vctrs::vec_c(
-        0L, 
+        0L,
         which(diff(na_dates) != 1L),
         length(na_dates)
       ) -> na_groups
@@ -262,27 +278,27 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     )
 }
 
-get_dp2_obs() |> print(n = 100)
+# future::plan(future::cluster(workers = 6))
 
-# dplyr::bind_rows(
-#   get_duf_obs() -> data1,
-#   get_dp2_obs() -> data2
-# ) |>
-#   dplyr::transmute(
-#     Date, Object, Type, ExpTime, N, Focus, 
-#     Inst = Instrument,
-#     Tlscp = Telescope,
-#     Comment
-#   ) |>
-#   dplyr::arrange(Date) -> data
+dplyr::bind_rows(
+  get_duf_obs(),
+  get_dp2_obs()
+) |>
+  dplyr::transmute(
+    Date, Object, Type, ExpTime, N, Focus,
+    Inst = Instrument,
+    Tlscp = Telescope,
+    Comment
+  ) |>
+  dplyr::arrange(Date) -> data
   
 
-# output <- fs::dir_create("output")
+output <- fs::dir_create("output")
 
-# data |>
-#   readr::write_csv(fs::path(output, "obslog.csv"))
-# data |>
-#   dplyr::select(-Comment) |>
-#   write_fixed(
-#     fs::path(output, "obslog.txt")
-#   )
+data |>
+  readr::write_csv(fs::path(output, "obslog.csv"))
+data |>
+  dplyr::select(-Comment) |>
+  write_fixed(
+    fs::path(output, "obslog.txt")
+  )
