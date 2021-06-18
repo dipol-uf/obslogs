@@ -277,28 +277,3 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
       )
     )
 }
-
-# future::plan(future::cluster(workers = 6))
-
-dplyr::bind_rows(
-  get_duf_obs(),
-  get_dp2_obs()
-) |>
-  dplyr::transmute(
-    Date, Object, Type, ExpTime, N, Focus,
-    Inst = Instrument,
-    Tlscp = Telescope,
-    Comment
-  ) |>
-  dplyr::arrange(Date) -> data
-  
-
-output <- fs::dir_create("output")
-
-data |>
-  readr::write_csv(fs::path(output, "obslog.csv"))
-data |>
-  dplyr::select(-Comment) |>
-  write_fixed(
-    fs::path(output, "obslog.txt")
-  )
