@@ -4,7 +4,7 @@ dp2_log <- fs::path(input, "Obs_log.txt")
 
 future::plan(
   future::cluster(
-    workers = max(c(parallel::detectCores() - 2L, 1L))
+    workers = max(c(parallel::detectCores() - 2L, 2L))
   )
 )
 
@@ -25,8 +25,12 @@ output <- fs::dir_create("output")
 
 data |>
   readr::write_csv(fs::path(output, "obslog.csv"))
+
 data |>
   dplyr::select(-Comment) |>
   write_fixed(
     fs::path(output, "obslog.txt")
   )
+
+data |>
+  jsonlite::write_json(fs::path(output, "obslog.json"), pretty = TRUE)

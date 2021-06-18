@@ -258,7 +258,7 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
       new_dates <- vctrs::vec_init(result[["Date"]], vctrs::vec_size(result))
       for (item in na_gaps) {
         vctrs::vec_slice(
-          new_dates, 
+          new_dates,
           seq(from = item[["Start"]], to = item[["End"]])
         ) <- item[["Value"]]
       }
