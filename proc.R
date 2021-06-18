@@ -78,6 +78,13 @@ dp2_pattern_3 <- paste0(
   "(?:\\s+([\\w -]+))?"                        # Type
 )
 
+dp2_pattern_4 <- paste0(
+  "^\\s*",
+  obj_name_pattern,                            # Object name
+  "\\s+",
+  "([+-]?\\d+[\\.,]?\\d+|-+||n/a)"             # Focus
+)
+
 parse_with_pattern <- function(
   txt, pattern, names
 ) {
@@ -91,7 +98,8 @@ get_objects <- function(str) {
   patterns = vctrs::vec_c(
     dp2_pattern_1,
     dp2_pattern_2,
-    dp2_pattern_3
+    dp2_pattern_3,
+    dp2_pattern_4
   )
   str <- vctrs::vec_slice(str, -1L) |>
     stringr::str_replace("\\t", " ")
@@ -221,26 +229,25 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
     )
 }
 
-dplyr::bind_rows(
-  get_duf_obs() -> data1,
-  get_dp2_obs() -> data2
-) |>
-  dplyr::transmute(
-    Date, Object, Type, ExpTime, N, Focus, 
-    Inst = Instrument,
-    Tlscp = Telescope,
-    Comment
-  ) |>
-  dplyr::arrange(Date) -> data
+# dplyr::bind_rows(
+#   get_duf_obs() -> data1,
+#   get_dp2_obs() -> data2
+# ) |>
+#   dplyr::transmute(
+#     Date, Object, Type, ExpTime, N, Focus, 
+#     Inst = Instrument,
+#     Tlscp = Telescope,
+#     Comment
+#   ) |>
+#   dplyr::arrange(Date) -> data
   
 
+output <- fs::dir_create("output")
+
 data |>
-  readr::write_csv("log.csv")
+  readr::write_csv(fs::path(output, "obslog.csv"))
 data |>
   dplyr::select(-Comment) |>
-  RLibs::write_fixed(
-    "log.txt",
-    frmt = c(
-      "%12s", "%16s", "%20s", "%10g", "%10d", "%10g", "%10s", "%8s"
-    )
+  write_fixed(
+    fs::path(output, "obslog.txt")
   )
