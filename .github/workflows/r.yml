@@ -1,0 +1,50 @@
+name: Parse Logs
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+    
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v1
+      
+      - name: Install dependencies
+        run: |
+          install.packages("remotes")
+          remotes::install_cran(c(
+            "rlang", 
+            "vctrs", 
+            "magrittr",
+            "lubridate",
+            "stringr",
+            "tibble",
+            "dplyr",
+            "purrr",
+            "brio",
+            "future",
+            "furrr",
+            "readr",
+            "forcats"
+            "parallel",
+            "jsonlite",
+            "fs",
+            "readxl"
+           ))         
+        shell: Rscript {0}
+      
+      - name: Produce log
+        run: |
+          source("write_fixed.R")
+          source("proc_duf.R")
+          source("proc_dp2.R")
+          source("proc.R")
+        
+        shell: Rscript {0}
