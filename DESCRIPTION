@@ -1,0 +1,31 @@
+Package: DataBase
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Ilia",
+           family = "Kosenkov",
+           role = c("aut", "cre"),
+           email = "ilia.kosenkov@outlook.com",
+           comment = c(ORCID = "0000-0001-5563-7840")
+    )
+Description: Processes DIPol logs.
+License: 
+Encoding: UTF-8
+Depends:
+    rlang, 
+    vctrs, 
+    magrittr,
+    lubridate,
+    stringr,
+    tibble,
+    dplyr,
+    purrr,
+    brio,
+    future,
+    furrr,
+    readr,
+    forcats,
+    parallel,
+    jsonlite,
+    fs,
+    readxl

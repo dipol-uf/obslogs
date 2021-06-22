@@ -21,29 +21,17 @@ jobs:
         run: | 
           dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/view.csproj
 
-         
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ hashFiles('.github/R-version') }}-1-
+
       - name: Install dependencies
         run: |
-          install.packages("remotes")
-          remotes::install_cran(c(
-            "rlang", 
-            "vctrs", 
-            "magrittr",
-            "lubridate",
-            "stringr",
-            "tibble",
-            "dplyr",
-            "purrr",
-            "brio",
-            "future",
-            "furrr",
-            "readr",
-            "forcats",
-            "parallel",
-            "jsonlite",
-            "fs",
-            "readxl"
-           ))         
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
       
       - name: Produce log
