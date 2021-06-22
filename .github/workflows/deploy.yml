@@ -55,9 +55,13 @@ jobs:
 
       - name: Fixing GH Pages
         run: |
-          touch published/wwwroot/.nojekyll
-          mkdir published/sample-data
-          cp output/obslog.json published/sample-data/obslog.json
+          touch ./published/wwwroot/.nojekyll
+          mkdir ./published/wwwroot/sample-data
+          cp ./output/obslog.json ./published/wwwroot/sample-data/obslog.json
+          Get-Content ./published/wwwroot/index.html | % {[System.Text.RegularExpressions.Regex]::Replace($_, "<base\s*href=`"/`"/>", "<base href=`"/obslogs/`"/>")} > ./published/wwwroot/index2.html
+          mv -f ./published/wwwroot/index2.html ./published/wwwroot/index.html
+        shell:
+          pwsh
 
 
       - name: Deploy
