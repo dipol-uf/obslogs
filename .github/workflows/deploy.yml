@@ -58,7 +58,9 @@ jobs:
         run: |
           touch published/wwwroot/.nojekyll
           mkdir published/sample-data
-          cp output/*json published/sample-data/
+          cp output/obslog.json published/sample-data/obslog.json
+          ls published
+          ls published/sample-data
 
 
       - name: Deploy
