@@ -42,10 +42,10 @@ jobs:
       
       - name: Produce log
         run: |
-          source("write_fixed.R")
-          source("proc_duf.R")
-          source("proc_dp2.R")
-          source("proc.R")
+          source("./R/write_fixed.R")
+          source("./R/proc_duf.R")
+          source("./R/proc_dp2.R")
+          source("./R/proc.R")
         shell: Rscript {0}
       
       - name: Upload results
