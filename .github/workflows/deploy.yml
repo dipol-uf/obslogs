@@ -63,6 +63,7 @@ jobs:
       - name: Fixing GH Pages
         run: |
           touch published/wwwroot/.nojekyll
+          mkdir published/sample-data
           cp output/*json published/sample-data/
 
 
