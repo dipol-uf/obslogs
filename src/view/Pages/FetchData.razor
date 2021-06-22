@@ -1,12 +1,13 @@
 ﻿@page "/fetchdata"
 @using System.Text.Json.Serialization
-@inject HttpClient Http
+@using System.Globalization
+@inject HttpClient _http
 
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (_observations is null)
 {
     <p><em>Loading...</em></p>
 }
@@ -16,56 +17,57 @@ else
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>Object</th>
+                <th>Exposure (s)</th>
+                <th>Images</th>
+                <th>Instrument</th>
+                <th>Telescope</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var obs in _observations)
             {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
+            <tr>
+                <td>@obs.Date.ToString("yyyy/MM/dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@obs.Object</td>
+                <td>@(obs.ExpTime?.ToString("F1") ?? "??")</td>
+                <td>@(@obs.N.ToString() ?? "??")</td>
+                <td>@obs.Instrument</td>
+                <td>@obs.Telescope</td>
+            </tr>
             }
         </tbody>
     </table>
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private DipolObservation[]? _observations;
 
     protected override async Task OnInitializedAsync()
     {
-        var x = await Http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json");
+        _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json");
     }
 
-    public class WeatherForecast
-    {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
 
     internal record DipolObservation(
-        [property:JsonPropertyName("Date")] string DateStr, 
-        string Object, 
-        string? Type, 
-        double? ExpTime, 
-        int? N, 
-        double? Focus, 
-        string? Inst, 
-        string? Tlscp, 
+        [property:JsonPropertyName("Date")] string DateStr,
+        string Object,
+        string? Type,
+        double? ExpTime,
+        int? N,
+        double? Focus,
+        [property:JsonPropertyName("Inst")] string Instrument,
+        [property:JsonPropertyName("Tlscp")] string Telescope,
         string? Comment
     )
     {
-
+        [JsonIgnore]
+        public DateTimeOffset Date => DateTimeOffset.TryParseExact(
+            DateStr,
+            "yyyy-MM-dd",
+            DateTimeFormatInfo.InvariantInfo,
+            DateTimeStyles.AssumeUniversal,
+            out var date
+        ) ? date : default;
     }
 }
