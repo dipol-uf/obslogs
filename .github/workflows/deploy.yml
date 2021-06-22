@@ -12,56 +12,60 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+       
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v1
       
-      # - name: Set up R
-      #   uses: r-lib/actions/setup-r@v1
-      
-      # - name: Install dependencies
-      #   run: |
-      #     install.packages("remotes")
-      #     remotes::install_cran(c(
-      #       "rlang", 
-      #       "vctrs", 
-      #       "magrittr",
-      #       "lubridate",
-      #       "stringr",
-      #       "tibble",
-      #       "dplyr",
-      #       "purrr",
-      #       "brio",
-      #       "future",
-      #       "furrr",
-      #       "readr",
-      #       "forcats",
-      #       "parallel",
-      #       "jsonlite",
-      #       "fs",
-      #       "readxl"
-      #      ))         
-      #   shell: Rscript {0}
-      
-      # - name: Produce log
-      #   run: |
-      #     source("./R/write_fixed.R")
-      #     source("./R/proc_duf.R")
-      #     source("./R/proc_dp2.R")
-      #     source("./R/proc.R")
-      #   shell: Rscript {0}
-      
-      # - name: Upload results
-      #   uses: actions/upload-artifact@main
-      #   with:
-      #     name: obslogs
-      #     path: output
 
       - name: Build site
         run: | 
           dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/view.csproj
 
+         
+      - name: Install dependencies
+        run: |
+          install.packages("remotes")
+          remotes::install_cran(c(
+            "rlang", 
+            "vctrs", 
+            "magrittr",
+            "lubridate",
+            "stringr",
+            "tibble",
+            "dplyr",
+            "purrr",
+            "brio",
+            "future",
+            "furrr",
+            "readr",
+            "forcats",
+            "parallel",
+            "jsonlite",
+            "fs",
+            "readxl"
+           ))         
+        shell: Rscript {0}
+      
+      - name: Produce log
+        run: |
+          source("./R/write_fixed.R")
+          source("./R/proc_duf.R")
+          source("./R/proc_dp2.R")
+          source("./R/proc.R")
+        shell: Rscript {0}
+      
+      - name: Upload results
+        uses: actions/upload-artifact@main
+        with:
+          name: obslogs
+          path: output
+
       - name: Fixing GH Pages
         run: |
           touch published/wwwroot/.nojekyll
-      
+          cp output/*json published/sample-data/
+
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
