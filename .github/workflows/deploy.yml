@@ -1,4 +1,4 @@
-name: Parse Logs
+name: Parse Logs & Update static site
 
 on:
   push:
@@ -53,3 +53,22 @@ jobs:
         with:
           name: obslogs
           path: output
+
+      - name: Build site
+        run: | 
+          dotnet publish -c Release -o published -p:BlazorEnableCompression=false .\src\view\view.csproj
+
+      - name: Fixing GH Pages
+        run: |
+          new-item published/wwwroot/.nojekyll
+          copy-item published/wwwroot/index.html published/wwwroot/404.html
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_BRANCH: master
+          BRANCH: gh-pages
+          FOLDER: published/wwwroot
+          SINGLE_COMMIT: true
+
