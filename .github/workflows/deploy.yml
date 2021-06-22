@@ -37,7 +37,6 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
       
       - name: Produce log
@@ -59,8 +58,6 @@ jobs:
           touch published/wwwroot/.nojekyll
           mkdir published/sample-data
           cp output/obslog.json published/sample-data/obslog.json
-          ls published
-          ls published/sample-data
 
 
       - name: Deploy
