@@ -60,9 +60,8 @@ jobs:
 
       - name: Fixing GH Pages
         run: |
-          new-item published/wwwroot/.nojekyll
-          copy-item published/wwwroot/index.html published/wwwroot/404.html
-
+          touch published/wwwroot/.nojekyll
+      
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
