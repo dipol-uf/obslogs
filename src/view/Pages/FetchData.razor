@@ -6,6 +6,10 @@
 <h1>Dipol observations</h1>
 
 <p>A log of DIPol-2 and DIPol-UF observations.</p>
+<p>
+    <input @bind="Value"/>
+    <button class="btn btn-primary" @onclick="FilterData">Search</button>
+</p>
 
 @if (_observations is null)
 {
@@ -25,7 +29,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var obs in _observations)
+            @foreach (var obs in Items() ?? Enumerable.Empty<DipolObservation>())
             {
             <tr>
                 <td>@obs.Date.ToString("yyyy/MM/dd", DateTimeFormatInfo.InvariantInfo)</td>
@@ -42,6 +46,25 @@ else
 
 @code {
     private DipolObservation[]? _observations;
+    public string? Value { get; set; }
+
+    private IEnumerable<DipolObservation>? Items()
+    {
+        var val = Value;
+        if (string.IsNullOrWhiteSpace(val))
+        {
+            return _observations;
+        }
+
+        return _observations?.Where(Filter);
+
+        bool Filter(DipolObservation obs) => obs.Object.AsSpan().Contains(val, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task FilterData()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 
     protected override async Task OnInitializedAsync()
     {
