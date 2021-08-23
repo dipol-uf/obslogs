@@ -7,13 +7,17 @@
 
 <p>A log of DIPol-2 and DIPol-UF observations.</p>
 <p>
-    <input @bind="Value"/>
+    <input value="@Value" @onkeydown="SearchField_OnKeyDown" @oninput="SearchField_OnInput"/>
     <button class="btn btn-primary" @onclick="FilterData">Search</button>
 </p>
 
-@if (_observations is null)
+@if (_observations.Length == 0)
 {
     <p><em>Loading...</em></p>
+}
+else if (_actualObservations.TryGetNonEnumeratedCount(out var count) && count == 0 || !_actualObservations.Any())
+{
+    <p><em>No observation satisfies given criteria.</em></p>
 }
 else
 {
@@ -29,7 +33,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var obs in Items() ?? Enumerable.Empty<DipolObservation>())
+            @foreach (var obs in Items)
             {
             <tr>
                 <td>@obs.Date.ToString("yyyy/MM/dd", DateTimeFormatInfo.InvariantInfo)</td>
@@ -45,32 +49,61 @@ else
 }
 
 @code {
-    private DipolObservation[]? _observations;
-    public string? Value { get; set; }
+    private DipolObservation[] _observations = Array.Empty<DipolObservation>();
+    private IEnumerable<DipolObservation> _actualObservations = Enumerable.Empty<DipolObservation>();
+    private bool _shouldRender = true;
+    public string Value { get; set; } = string.Empty;
 
-    private IEnumerable<DipolObservation>? Items()
+    private IEnumerable<DipolObservation> Items => _actualObservations;
+
+    private void FilterData()
     {
         var val = Value;
-        if (string.IsNullOrWhiteSpace(val))
-        {
-            return _observations;
-        }
-
-        return _observations?.Where(Filter);
-
+        _actualObservations = string.IsNullOrWhiteSpace(val) ? _observations : _observations.Where(Filter);
+        _shouldRender = true;
+     
         bool Filter(DipolObservation obs) => obs.Object.AsSpan().Contains(val, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private async Task FilterData()
-    {
-        await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json");
+        _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json")
+                        ?? throw new InvalidOperationException("Failed to load data");
+
+        _actualObservations = _observations;
     }
 
+    protected override bool ShouldRender()
+    {
+        if (_shouldRender)
+        {
+            _shouldRender = false;
+            return true;
+        }
+        return false;
+    }
+
+
+    private void SearchField_OnKeyDown(KeyboardEventArgs obj)
+    {
+        
+    }
+
+    private void SearchField_OnInput(ChangeEventArgs obj)
+    {
+        if (obj.Value is string newString)
+        {
+            Value = newString;
+            if (string.IsNullOrWhiteSpace(newString))
+            {
+                FilterData();
+            }
+            else
+            {
+                _shouldRender = false;
+            }
+        }
+    }
 
     internal record DipolObservation(
         [property:JsonPropertyName("Date")] string DateStr,
@@ -93,4 +126,6 @@ else
             out var date
         ) ? date : default;
     }
+
+
 }
