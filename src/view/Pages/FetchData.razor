@@ -7,15 +7,26 @@
 
 <p>A log of DIPol-2 and DIPol-UF observations.</p>
 <p>
-    <input value="@Value" @onkeydown="SearchField_OnKeyDown" @oninput="SearchField_OnInput"/>
-    <button class="btn btn-primary" @onclick="FilterData" type="submit">Search</button>
+    <div class="input-group mb-4 w-75">
+        <input
+            type="text"
+            value="@Value"
+            @onkeydown="SearchField_OnKeyDown"
+            @oninput="SearchField_OnInput"
+            class="form-control mr-2"/>
+        <div class="input-group-append">
+            <button class="btn btn-primary" @onclick="FilterData" type="submit">Search</button>
+        </div>
+    </div>
 </p>
 
+@*First time loading, no data is yet available*@
 @if (_observations.Length == 0)
 {
     <p><em>Loading...</em></p>
 }
-else if (_actualObservations.TryGetNonEnumeratedCount(out var count) && count == 0 || !_actualObservations.Any())
+@*The table is empty -> no entries match search criteria*@
+else if (Items.TryGetNonEnumeratedCount(out var count) && count == 0 || !Items.Any())
 {
     <p><em>No observation satisfies given criteria.</em></p>
 }
@@ -50,23 +61,24 @@ else
 
 @code {
     private DipolObservation[] _observations = Array.Empty<DipolObservation>();
-    private IEnumerable<DipolObservation> _actualObservations = Enumerable.Empty<DipolObservation>();
     private bool _shouldRender = true;
-    public string Value { get; set; } = string.Empty;
+    private string Value { get; set; } = string.Empty;
 
-    private IEnumerable<DipolObservation> Items => _actualObservations;
+    private IEnumerable<DipolObservation> Items { get; set; } = Enumerable.Empty<DipolObservation>();
 
     private void FilterData()
     {
         var val = Value;
-        var newObservations = string.IsNullOrWhiteSpace(val) ? _observations : _observations.Where(Filter);
+        IEnumerable<DipolObservation> newObservations = string.IsNullOrWhiteSpace(val)
+            ? _observations 
+            : _observations.Where(Filter);
 
-        if (ReferenceEquals(newObservations, _actualObservations))
+        if (ReferenceEquals(newObservations, Items))
         {
             return;
         }
 
-        _actualObservations = newObservations;
+        Items = newObservations;
        
         _shouldRender = true;
      
@@ -78,7 +90,7 @@ else
         _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json")
                         ?? throw new InvalidOperationException("Failed to load data");
 
-        _actualObservations = _observations;
+        Items = _observations;
     }
 
     protected override bool ShouldRender()
