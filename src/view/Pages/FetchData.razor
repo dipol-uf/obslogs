@@ -8,7 +8,7 @@
 <p>A log of DIPol-2 and DIPol-UF observations.</p>
 <p>
     <input value="@Value" @onkeydown="SearchField_OnKeyDown" @oninput="SearchField_OnInput"/>
-    <button class="btn btn-primary" @onclick="FilterData">Search</button>
+    <button class="btn btn-primary" @onclick="FilterData" type="submit">Search</button>
 </p>
 
 @if (_observations.Length == 0)
@@ -86,7 +86,10 @@ else
 
     private void SearchField_OnKeyDown(KeyboardEventArgs obj)
     {
-        
+        if (obj.Code == "Enter")
+        {
+            FilterData();
+        }
     }
 
     private void SearchField_OnInput(ChangeEventArgs obj)
