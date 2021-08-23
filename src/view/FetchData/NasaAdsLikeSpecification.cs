@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Pidgin;
@@ -9,20 +10,15 @@ namespace DIPolWeb.FetchData;
 
 internal class NasaAdsLikeSpecification : ISearchSpecification
 {
-    private static Parser<char, Condition> YearEntry { get; }
-    private static Parser<char, Condition> ObjectEntry { get; }
-    private static Parser<char, Condition> InstrumentEntry { get; }
-    private static Parser<char, Condition> TelescopeEntry { get; }
-
+    private static Parser<char, IEnumerable<(string, Condition)>> FullParser { get; }
 
     private readonly string _strRep;
 
     public NasaAdsLikeSpecification(string stringRepresentation)
     {
-       
 
-        var yearResult = YearEntry.Parse(stringRepresentation);
-        var objectResult = ObjectEntry.Parse(stringRepresentation);
+
+        var fullResult = FullParser.Parse(stringRepresentation);
         _strRep = stringRepresentation;
     }
 
@@ -42,7 +38,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
         Parser<char, string> telescopeParser = LetterOrDigit.Or(OneOf('-', '+')).AtLeastOnceString();
 
 
-        YearEntry = BuildEntryParser(
+        Parser<char, Condition> yearEntry = BuildEntryParser(
             "Year",
             OneOf(
                 numericValue.Cast<Condition>(),
@@ -50,7 +46,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
             )
         );
 
-        ObjectEntry = BuildEntryParser(
+        Parser<char, Condition> objectEntry = BuildEntryParser(
             "Object",
             OneOf(
                 objectString,
@@ -58,7 +54,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
             ).Map(x => new CaseInsensitiveTextCondition(x.Trim()) as Condition)
         );
 
-        InstrumentEntry = BuildEntryParser(
+        Parser<char, Condition> instrumentEntry = BuildEntryParser(
             "Instrument",
             OneOf(
                 instrumentParser,
@@ -66,7 +62,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
             ).Map(x => new CaseInsensitiveTextCondition(x) as Condition)
         );
 
-        TelescopeEntry = BuildEntryParser(
+        Parser<char, Condition> telescopeEntry = BuildEntryParser(
             "Telescope",
             OneOf(
                 telescopeParser,
@@ -74,7 +70,12 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
             ).Map(x => new CaseInsensitiveTextCondition(x) as Condition)
         );
 
-
+        FullParser = OneOf(
+            yearEntry.Map(x => ("Year", x)),
+            objectEntry.Map(x => ("Object", x)),
+            instrumentEntry.Map(x => ("Instrument", x)),
+            telescopeEntry.Map(x => ("Telescope", x))
+        ).SeparatedAndOptionallyTerminatedAtLeastOnce(Whitespaces).Before(End);
     }
     private static Parser<char, Condition> BuildEntryParser(string name, Parser<char, Condition> implementation) =>
         CIString(name)
