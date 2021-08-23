@@ -22,6 +22,16 @@ internal record NumericRangeCondition(NumericCondition Lower, NumericCondition U
     public override bool Matches(int obj) => obj >= Lower.Value && obj <= Upper.Value;
 }
 
+internal record DateCondition(DateOnly Value) : Condition<DateOnly>
+{
+    public override bool Matches(DateOnly obj) => obj == Value;
+}
+
+internal record DateRangeCondition(DateCondition Lower, DateCondition Upper) : Condition<DateOnly>
+{
+    public override bool Matches(DateOnly obj) => obj >= Lower.Value && obj <= Upper.Value;
+}
+
 internal record CaseInsensitiveTextCondition(string Value) : Condition<string>
 {
     public override bool Matches(string obj) => obj.Equals(Value, StringComparison.OrdinalIgnoreCase);

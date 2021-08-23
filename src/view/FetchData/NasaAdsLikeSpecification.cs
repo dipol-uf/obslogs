@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Pidgin;
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
@@ -15,6 +16,8 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
     private record ObjectSpecification(Condition<string> Condition) : ColumnSpecification;
 
     private record YearSpecification(Condition<int> Condition) : ColumnSpecification;
+
+    private record DateSpecification(Condition<DateOnly> condition) : ColumnSpecification;
 
     private record InstrumentSpecification(Condition<string> Condition) : ColumnSpecification;
 
@@ -61,6 +64,33 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
 
         Parser<char, string> telescopeParser = LetterOrDigit.Or(OneOf('-', '+')).AtLeastOnceString();
 
+        Parser<char, int> twoDigits = Try(Digit.RepeatString(2)).Or(Digit.Map(x => new string(x, 1))).Map(Parse);
+        Parser<char, int> fourDigits = Try(Digit.RepeatString(4)).Or(Digit.RepeatString(2)).Map(Parse);
+
+        Parser<char, DateOnly> regularDate = Map(
+            (day, month, year) => new DateOnly(year, month, day),
+            twoDigits.Before(Char('.')),
+            twoDigits.Before(Char('.')),
+            fourDigits
+        );
+
+        Parser<char, DateOnly> isoDate = Map(
+            (year, month, day) => new DateOnly(year, month, day),
+            fourDigits.Before(Char('-')),
+            twoDigits.Before(Char('-')),
+            twoDigits
+        );
+
+        Parser<char, DateOnly> usDate = Map(
+            (month, day, year) => new DateOnly(year, month, day),
+            twoDigits.Before(Char('/')),
+            twoDigits.Before(Char('/')),
+            fourDigits
+        );
+
+        Parser<char, DateCondition> date = OneOf(regularDate, isoDate, usDate).Map(x => new DateCondition(x));
+
+        Parser<char, DateRangeCondition> dateRange = Map((x, _, y) => new DateRangeCondition(x, y), date, Char('-'), date);
 
         Parser<char, ColumnSpecification> yearEntry = BuildEntryParser(
             "Year",
@@ -69,6 +99,14 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
                 numericValue.Cast<Condition<int>>()
             )
         ).Map(x => new YearSpecification(x) as ColumnSpecification);
+
+        Parser<char, ColumnSpecification> dateEntry = BuildEntryParser(
+            "Date",
+            OneOf(
+                Try(dateRange.Cast<Condition<DateOnly>>()),
+                date.Cast<Condition<DateOnly>>()
+            )
+        ).Map(x => new DateSpecification(x) as ColumnSpecification);
 
         Parser<char, ColumnSpecification> objectEntry = BuildEntryParser(
             "Object",
@@ -98,7 +136,8 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
             yearEntry,
             objectEntry,
             instrumentEntry,
-            telescopeEntry
+            telescopeEntry,
+            dateEntry
         ).SeparatedAndOptionallyTerminatedAtLeastOnce(Whitespaces).Before(End)
          .Map(x => x.ToArray());
     }

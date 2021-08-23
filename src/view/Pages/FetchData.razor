@@ -65,7 +65,7 @@ else
             @foreach (var obs in Items)
             {
             <tr>
-                <td>@obs.Date.ToString("yyyy/MM/dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@obs.Date.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
                 <td>@obs.Object</td>
                 <td>@(obs.ExpTime?.ToString("F1") ?? "??")</td>
                 <td>@(@obs.N.ToString() ?? "??")</td>
