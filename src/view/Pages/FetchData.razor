@@ -59,7 +59,15 @@ else
     private void FilterData()
     {
         var val = Value;
-        _actualObservations = string.IsNullOrWhiteSpace(val) ? _observations : _observations.Where(Filter);
+        var newObservations = string.IsNullOrWhiteSpace(val) ? _observations : _observations.Where(Filter);
+
+        if (ReferenceEquals(newObservations, _actualObservations))
+        {
+            return;
+        }
+
+        _actualObservations = newObservations;
+       
         _shouldRender = true;
      
         bool Filter(DipolObservation obs) => obs.Object.AsSpan().Contains(val, StringComparison.OrdinalIgnoreCase);
