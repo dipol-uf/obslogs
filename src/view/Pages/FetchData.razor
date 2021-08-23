@@ -35,6 +35,21 @@ else if (Items.TryGetNonEnumeratedCount(out var count) && count == 0 || !Items.A
 }
 else
 {
+    if (Items.TryGetNonEnumeratedCount(out count))
+    {
+        if (string.IsNullOrWhiteSpace(Value))
+        {
+            <p><em>Database contains</em> <code>@count</code> <em>entries.</em></p>
+        }
+        else
+        {
+            <p><code>@count</code> / <code>@_observations.Length</code> <em>entries match search criteria.</em></p>
+        }
+    }
+    else
+    {
+        <p><em>Unable to count entries in the table.</em></p>
+    }
     <table class="table">
         <thead>
             <tr>
@@ -82,7 +97,7 @@ else
         else
         {
             spec = _searchSpecificationProvider.GetSpecification(val);
-            newObservations = _observations.Where(obs => spec.SatisfiesConditions(obs));
+            newObservations = _observations.Where(obs => spec.SatisfiesConditions(obs)).ToList();
         }
 
 
