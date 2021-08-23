@@ -72,9 +72,19 @@ else
     private void FilterData()
     {
         var val = Value;
-        IEnumerable<DipolObservation> newObservations = string.IsNullOrWhiteSpace(val)
-            ? _observations 
-            : _observations.Where(Filter);
+        IEnumerable<DipolObservation> newObservations;
+        ISearchSpecification spec;
+
+        if (string.IsNullOrWhiteSpace(val))
+        {
+            newObservations = _observations;
+        }
+        else
+        {
+            spec = _searchSpecificationProvider.GetSpecification(val);
+            newObservations = _observations.Where(obs => spec.SatisfiesConditions(obs));
+        }
+
 
         if (ReferenceEquals(newObservations, Items))
         {
@@ -84,8 +94,7 @@ else
         Items = newObservations;
        
         _shouldRender = true;
-     
-        bool Filter(DipolObservation obs) => obs.Object.AsSpan().Contains(val, StringComparison.OrdinalIgnoreCase);
+
     }
 
     protected override async Task OnInitializedAsync()
