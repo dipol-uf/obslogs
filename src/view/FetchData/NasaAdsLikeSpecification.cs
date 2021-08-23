@@ -10,7 +10,17 @@ namespace DIPolWeb.FetchData;
 
 internal class NasaAdsLikeSpecification : ISearchSpecification
 {
-    private static Parser<char, IEnumerable<(string, Condition)>> FullParser { get; }
+    private record ColumnSpecification;
+
+    private record ObjectSpecification(Condition<string> Condition) : ColumnSpecification;
+
+    private record YearSpecification(Condition<int> Condition) : ColumnSpecification;
+
+    private record InstrumentSpecification(Condition<string> Condition) : ColumnSpecification;
+
+    private record TelescopeSpecification(Condition<string> Condition) : ColumnSpecification;
+
+    private static Parser<char, ColumnSpecification[]> FullParser { get; }
 
     private readonly string _strRep;
 
@@ -18,7 +28,21 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
     {
 
 
-        var fullResult = FullParser.Parse(stringRepresentation);
+        var fullResult = FullParser.Parse(stringRepresentation.Trim());
+
+        if (fullResult.Success)
+        {
+            var results = new Dictionary<Type, ColumnSpecification>(fullResult.Value.Length);
+
+            foreach (var item in fullResult.Value)
+            {
+                if (!results.TryAdd(item.GetType(), item))
+                {
+                    // TODO: handle multiple instances of the same condition
+                }
+            }
+        }
+        
         _strRep = stringRepresentation;
     }
 
@@ -38,46 +62,47 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
         Parser<char, string> telescopeParser = LetterOrDigit.Or(OneOf('-', '+')).AtLeastOnceString();
 
 
-        Parser<char, Condition> yearEntry = BuildEntryParser(
+        Parser<char, ColumnSpecification> yearEntry = BuildEntryParser(
             "Year",
             OneOf(
-                numericValue.Cast<Condition>(),
-                numericRange.Cast<Condition>()
+                Try(numericRange.Cast<Condition<int>>()),
+                numericValue.Cast<Condition<int>>()
             )
-        );
+        ).Map(x => new YearSpecification(x) as ColumnSpecification);
 
-        Parser<char, Condition> objectEntry = BuildEntryParser(
+        Parser<char, ColumnSpecification> objectEntry = BuildEntryParser(
             "Object",
             OneOf(
                 objectString,
                 InDelimiters(objectStringInQuotes)
-            ).Map(x => new CaseInsensitiveTextCondition(x.Trim()) as Condition)
-        );
+            )
+        ).Map(x => new ObjectSpecification(new CaseInsensitiveTextCondition(x)) as ColumnSpecification);
 
-        Parser<char, Condition> instrumentEntry = BuildEntryParser(
+        Parser<char, ColumnSpecification> instrumentEntry = BuildEntryParser(
             "Instrument",
             OneOf(
                 instrumentParser,
                 InDelimiters(instrumentParser)
-            ).Map(x => new CaseInsensitiveTextCondition(x) as Condition)
-        );
+            )
+        ).Map(x => new InstrumentSpecification(new CaseInsensitiveTextCondition(x)) as ColumnSpecification);
 
-        Parser<char, Condition> telescopeEntry = BuildEntryParser(
+        Parser<char, ColumnSpecification> telescopeEntry = BuildEntryParser(
             "Telescope",
             OneOf(
                 telescopeParser,
                 InDelimiters(telescopeParser)
-            ).Map(x => new CaseInsensitiveTextCondition(x) as Condition)
-        );
+            )
+        ).Map(x => new TelescopeSpecification(new CaseInsensitiveTextCondition(x)) as ColumnSpecification);
 
         FullParser = OneOf(
-            yearEntry.Map(x => ("Year", x)),
-            objectEntry.Map(x => ("Object", x)),
-            instrumentEntry.Map(x => ("Instrument", x)),
-            telescopeEntry.Map(x => ("Telescope", x))
-        ).SeparatedAndOptionallyTerminatedAtLeastOnce(Whitespaces).Before(End);
+            yearEntry,
+            objectEntry,
+            instrumentEntry,
+            telescopeEntry
+        ).SeparatedAndOptionallyTerminatedAtLeastOnce(Whitespaces).Before(End)
+         .Map(x => x.ToArray());
     }
-    private static Parser<char, Condition> BuildEntryParser(string name, Parser<char, Condition> implementation) =>
+    private static Parser<char, T> BuildEntryParser<T>(string name, Parser<char, T> implementation) =>
         CIString(name)
            .Then(SkipWhitespaces)
            .Then(Char(':'))
