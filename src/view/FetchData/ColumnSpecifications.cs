@@ -13,11 +13,6 @@ internal record ObjectSpecification(Condition<string> Condition) : ColumnSpecifi
     public override bool Matches(DipolObservation obs) => Condition.Matches(obs.Object);
 }
 
-internal record YearSpecification(Condition<int> Condition) : ColumnSpecification
-{
-    public override bool Matches(DipolObservation obs) => Condition.Matches(obs.Date.Year);
-}
-
 internal record DateSpecification(Condition<DateOnly> Condition) : ColumnSpecification
 {
     public override bool Matches(DipolObservation obs) => Condition.Matches(obs.Date);

@@ -11,17 +11,6 @@ internal abstract record Condition<T> : Condition
 }
 
 
-internal record NumericCondition(int Value) : Condition<int>
-{
-    public override bool Matches(int obj) => obj == Value;
-
-}
-
-internal record NumericRangeCondition(NumericCondition Lower, NumericCondition Upper) : Condition<int>
-{
-    public override bool Matches(int obj) => obj >= Lower.Value && obj <= Upper.Value;
-}
-
 internal record DateCondition(DateOnly Value) : Condition<DateOnly>
 {
     public override bool Matches(DateOnly obj) => obj == Value;
