@@ -1,22 +1,55 @@
 ﻿@page "/fetchdata"
-@using System.Text.Json.Serialization
+
+@using DIPolWeb.FetchData
 @using System.Globalization
+
 @inject HttpClient _http
+@inject ISearchSpecificationProvider _searchSpecificationProvider
 
 <h1>Dipol observations</h1>
 
 <p>A log of DIPol-2 and DIPol-UF observations.</p>
 <p>
-    <input @bind="Value"/>
-    <button class="btn btn-primary" @onclick="FilterData">Search</button>
+    <div class="input-group mb-4 w-75">
+        <input
+            type="text"
+            value="@Value"
+            @onkeydown="SearchField_OnKeyDown"
+            @oninput="SearchField_OnInput"
+            class="form-control mr-2"/>
+        <div class="input-group-append">
+            <button class="btn btn-primary" @onclick="FilterData" type="submit">Search</button>
+        </div>
+    </div>
 </p>
 
-@if (_observations is null)
+@*First time loading, no data is yet available*@
+@if (_observations.Length == 0)
 {
     <p><em>Loading...</em></p>
 }
+@*The table is empty -> no entries match search criteria*@
+else if (Items.TryGetNonEnumeratedCount(out var count) && count == 0 || !Items.Any())
+{
+    <p><em>No observation satisfies given criteria.</em></p>
+}
 else
 {
+    if (Items.TryGetNonEnumeratedCount(out count))
+    {
+        if (string.IsNullOrWhiteSpace(Value))
+        {
+            <p><em>Database contains</em> <code>@count</code> <em>entries.</em></p>
+        }
+        else
+        {
+            <p><code>@count</code> / <code>@_observations.Length</code> <em>entries match search criteria.</em></p>
+        }
+    }
+    else
+    {
+        <p><em>Unable to count entries in the table.</em></p>
+    }
     <table class="table">
         <thead>
             <tr>
@@ -29,10 +62,10 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var obs in Items() ?? Enumerable.Empty<DipolObservation>())
+            @foreach (var obs in Items)
             {
             <tr>
-                <td>@obs.Date.ToString("yyyy/MM/dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@obs.Date.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
                 <td>@obs.Object</td>
                 <td>@(obs.ExpTime?.ToString("F1") ?? "??")</td>
                 <td>@(@obs.N.ToString() ?? "??")</td>
@@ -45,52 +78,83 @@ else
 }
 
 @code {
-    private DipolObservation[]? _observations;
-    public string? Value { get; set; }
+    private DipolObservation[] _observations = Array.Empty<DipolObservation>();
+    private bool _shouldRender = true;
+    private string Value { get; set; } = string.Empty;
 
-    private IEnumerable<DipolObservation>? Items()
+    private IEnumerable<DipolObservation> Items { get; set; } = Enumerable.Empty<DipolObservation>();
+
+    private void FilterData()
     {
         var val = Value;
+        IEnumerable<DipolObservation> newObservations;
+        ISearchSpecification spec;
+
         if (string.IsNullOrWhiteSpace(val))
         {
-            return _observations;
+            newObservations = _observations;
+        }
+        else
+        {
+            spec = _searchSpecificationProvider.GetSpecification(val);
+            newObservations = _observations.Where(obs => spec.SatisfiesConditions(obs)).ToList();
         }
 
-        return _observations?.Where(Filter);
 
-        bool Filter(DipolObservation obs) => obs.Object.AsSpan().Contains(val, StringComparison.OrdinalIgnoreCase);
-    }
+        if (ReferenceEquals(newObservations, Items))
+        {
+            return;
+        }
 
-    private async Task FilterData()
-    {
-        await InvokeAsync(StateHasChanged);
+        Items = newObservations;
+       
+        _shouldRender = true;
+
     }
 
     protected override async Task OnInitializedAsync()
     {
-        _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json");
+        _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json")
+                        ?? throw new InvalidOperationException("Failed to load data");
+
+        Items = _observations;
     }
 
-
-    internal record DipolObservation(
-        [property:JsonPropertyName("Date")] string DateStr,
-        string Object,
-        string? Type,
-        double? ExpTime,
-        int? N,
-        double? Focus,
-        [property:JsonPropertyName("Inst")] string Instrument,
-        [property:JsonPropertyName("Tlscp")] string Telescope,
-        string? Comment
-    )
+    protected override bool ShouldRender()
     {
-        [JsonIgnore]
-        public DateTimeOffset Date => DateTimeOffset.TryParseExact(
-            DateStr,
-            "yyyy-MM-dd",
-            DateTimeFormatInfo.InvariantInfo,
-            DateTimeStyles.AssumeUniversal,
-            out var date
-        ) ? date : default;
+        if (_shouldRender)
+        {
+            _shouldRender = false;
+            return true;
+        }
+        return false;
     }
+
+
+    private void SearchField_OnKeyDown(KeyboardEventArgs obj)
+    {
+        if (obj.Code == "Enter")
+        {
+            FilterData();
+        }
+    }
+
+    private void SearchField_OnInput(ChangeEventArgs obj)
+    {
+        if (obj.Value is string newString)
+        {
+            Value = newString;
+            if (string.IsNullOrWhiteSpace(newString))
+            {
+                FilterData();
+            }
+            else
+            {
+                _shouldRender = false;
+            }
+        }
+    }
+
+  
+
 }
