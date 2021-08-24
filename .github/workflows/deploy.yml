@@ -12,10 +12,14 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+      - name: Setup .NET preview
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.100-preview.7.21379.14'
 
       - name: Build site
         run: | 
-          dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/view.csproj
+          dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/DIPolWeb.csproj
        
       - name: Set up R
         uses: r-lib/actions/setup-r@v1
