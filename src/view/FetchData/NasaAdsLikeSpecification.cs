@@ -11,22 +11,12 @@ namespace DIPolWeb.FetchData;
 
 internal class NasaAdsLikeSpecification : ISearchSpecification
 {
-    private record ColumnSpecification;
 
-    private record ObjectSpecification(Condition<string> Condition) : ColumnSpecification;
-
-    private record YearSpecification(Condition<int> Condition) : ColumnSpecification;
-
-    private record DateSpecification(Condition<DateOnly> condition) : ColumnSpecification;
-
-    private record InstrumentSpecification(Condition<string> Condition) : ColumnSpecification;
-
-    private record TelescopeSpecification(Condition<string> Condition) : ColumnSpecification;
 
     private static Parser<char, ColumnSpecification[]> FullParser { get; }
 
     private readonly string _strRep;
-
+    private readonly ColumnSpecification[]? _specs;
     public NasaAdsLikeSpecification(string stringRepresentation)
     {
 
@@ -44,12 +34,31 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
                     // TODO: handle multiple instances of the same condition
                 }
             }
+
+            _specs = fullResult.Value.ToArray();
         }
         
         _strRep = stringRepresentation;
     }
 
-    public bool SatisfiesConditions(DipolObservation obs) => obs.Object.Contains(_strRep, StringComparison.OrdinalIgnoreCase);
+    public bool SatisfiesConditions(DipolObservation obs)
+    {
+        if (_specs is not null)
+        {
+            foreach (var spec in _specs)
+            {
+                if (!spec.Matches(obs))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Temporary bypass
+        return obs.Object.Contains(_strRep, StringComparison.OrdinalIgnoreCase);
+    }
 
 
     static NasaAdsLikeSpecification()
@@ -90,6 +99,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
 
         Parser<char, DateCondition> date = OneOf(regularDate, isoDate, usDate).Map(x => new DateCondition(x));
 
+        // TODO: Allow for ranges like 1980- 
         Parser<char, DateRangeCondition> dateRange = Map((x, _, y) => new DateRangeCondition(x, y), date, Char('-'), date);
 
         Parser<char, ColumnSpecification> yearEntry = BuildEntryParser(

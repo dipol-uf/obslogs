@@ -34,7 +34,7 @@ internal record DateRangeCondition(DateCondition Lower, DateCondition Upper) : C
 
 internal record CaseInsensitiveTextCondition(string Value) : Condition<string>
 {
-    public override bool Matches(string obj) => obj.Equals(Value, StringComparison.OrdinalIgnoreCase);
+    public override bool Matches(string obj) => obj.Contains(Value, StringComparison.OrdinalIgnoreCase);
 }
 
 internal record AndCondition<T>(Condition<T> Lhs, Condition<T> Rhs) : Condition<T>

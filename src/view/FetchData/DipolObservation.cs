@@ -16,11 +16,11 @@ internal record DipolObservation(
 )
 {
     [JsonIgnore]
-    public DateTimeOffset Date => DateTimeOffset.TryParseExact(
+    public DateOnly Date => DateTimeOffset.TryParseExact(
         DateStr,
         "yyyy-MM-dd",
         DateTimeFormatInfo.InvariantInfo,
         DateTimeStyles.AssumeUniversal,
         out var date
-    ) ? date : default;
+    ) ? DateOnly.FromDateTime(date.UtcDateTime) : default;
 }
