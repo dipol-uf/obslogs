@@ -10,6 +10,8 @@ namespace DIPolWeb.FetchData;
 
 internal class NasaAdsLikeSpecification : ISearchSpecification
 {
+    private static readonly Parser<char, string> WordParser = LetterOrDigit.Or(OneOf('-', '+')).AtLeastOnceString();
+
     private static readonly Func<string, int> ParseInt = ParseIntImpl;
     private static readonly Parser<char, ColumnSpecification[]> ConditionsParser;
 
@@ -68,28 +70,41 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
            .Then(SkipWhitespaces)
            .Then(implementation);
 
+    private static Parser<char, T> BuildEntryParser<T>(string name, params Parser<char, T>[] implementations)
+    {
+        if (implementations.Length == 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(implementations));
+        }
+
+        var copiedImpl = new Parser<char, T>[implementations.Length];
+
+        for (var i = 0; i < implementations.Length - 1; i++)
+        {
+            copiedImpl[i] = Try(implementations[i]);
+        }
+
+        copiedImpl[^1] = implementations[^1];
+
+        return BuildEntryParser(name, OneOf(copiedImpl));
+    }
+
+
     private static Parser<char, ColumnSpecification> BuildTelescopeParser()
     {
-        Parser<char, string> telescopeParser = LetterOrDigit.Or(OneOf('-', '+')).AtLeastOnceString();
         return BuildEntryParser(
             "Telescope",
-            OneOf(
-                telescopeParser,
-                InDelimiters(telescopeParser)
-            )
+            InDelimiters(WordParser),
+            WordParser
         ).Map(x => new TelescopeSpecification(new CaseInsensitiveTextCondition(x)) as ColumnSpecification);
     }
 
     private static Parser<char, ColumnSpecification> BuildInstrumentParser()
     {
-        Parser<char, string> instrumentParser = CIString("dipol-2").Or(CIString("dipol-uf"));
-
         return BuildEntryParser(
             "Instrument",
-            OneOf(
-                instrumentParser,
-                InDelimiters(instrumentParser)
-            )
+            InDelimiters(WordParser),
+            WordParser
         ).Map(x => new InstrumentSpecification(new CaseInsensitiveTextCondition(x)) as ColumnSpecification);
     }
 
@@ -100,10 +115,8 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
 
         return BuildEntryParser(
             "Object",
-            OneOf(
-                objectString,
-                InDelimiters(objectStringInQuotes)
-            )
+            InDelimiters(objectStringInQuotes),
+            objectString
         ).Map(x => new ObjectSpecification(new CaseInsensitiveTextCondition(x)) as ColumnSpecification);
     }
 
@@ -114,10 +127,8 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
 
         return BuildEntryParser(
             "Year",
-            OneOf(
-                Try(numericRange),
-                numericValue.Map(x => (Lower: x, Upper: x))
-            )
+            numericRange,
+            numericValue.Map(x => (Lower: x, Upper: x))
         ).Map(
             x => new DateSpecification(
                 new DateRangeCondition(
@@ -140,33 +151,14 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
             fourDigits
         );
 
-        Parser<char, DateOnly> isoDate = Map(
-            (year, month, day) => new DateOnly(year, month, day),
-            fourDigits.Before(Char('-')),
-            twoDigits.Before(Char('-')),
-            twoDigits
-        );
-
-        Parser<char, DateOnly> usDate = Map(
-            (month, day, year) => new DateOnly(year, month, day),
-            twoDigits.Before(Char('/')),
-            twoDigits.Before(Char('/')),
-            fourDigits
-        );
-
-        Parser<char, DateCondition> date = OneOf(regularDate, isoDate, usDate).Map(x => new DateCondition(x));
-
-        // TODO: Allow for ranges like 1980- 
+        Parser<char, DateCondition> date = regularDate.Map(x => new DateCondition(x));
         Parser<char, DateRangeCondition> dateRange = Map((x, _, y) => new DateRangeCondition(x, y), date, Char('-'), date);
-
 
 
         return BuildEntryParser(
             "Date",
-            OneOf(
-                Try(dateRange.Cast<Condition<DateOnly>>()),
-                date.Cast<Condition<DateOnly>>()
-            )
+            dateRange.Cast<Condition<DateOnly>>(),
+            date.Cast<Condition<DateOnly>>()
         ).Map(x => new DateSpecification(x) as ColumnSpecification);
     }
 
