@@ -123,7 +123,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
     private static Parser<char, ColumnSpecification> BuildYearParser()
     {
         Parser<char, int> numericValue = Digit.RepeatString(4).Map(ParseInt);
-        Parser<char, (int Lower, int Upper)> numericRange = Map((x, _, z) => (x, z), numericValue, Char('-'), numericValue);
+        Parser<char, (int Lower, int Upper)> numericRange = ParseRange(numericValue, (x, y) => (x, y));
 
         return BuildEntryParser(
             "Year",
@@ -152,7 +152,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
         );
 
         Parser<char, DateCondition> date = regularDate.Map(x => new DateCondition(x));
-        Parser<char, DateRangeCondition> dateRange = Map((x, _, y) => new DateRangeCondition(x, y), date, Char('-'), date);
+        Parser<char, DateRangeCondition> dateRange = ParseRange(date, (x, y) => new DateRangeCondition(x, y));
 
 
         return BuildEntryParser(
@@ -165,4 +165,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
     private static Parser<char, T> InDelimiters<T>(Parser<char, T> parser, char left = '"', char right = '"') =>
         Char(left).Then(SkipWhitespaces).Then(parser).Before(SkipWhitespaces).Before(Char(right));
     private static int ParseIntImpl(string s) => int.Parse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+
+    private static Parser<char, TRet> ParseRange<T, TRet>(Parser<char, T> parser, Func<T, T, TRet> mapper) =>
+        Map((x, _, y) => mapper(x, y), parser, Char('-'), parser);
 }
