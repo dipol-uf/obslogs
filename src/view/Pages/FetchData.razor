@@ -69,7 +69,7 @@ else
             {
             <tr>
                 <td>@obs.Date.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
-                <td>@(_mjdConverter.ToMjd(obs.Date.ToDateTime(default, DateTimeKind.Utc)).ToString("F2"))</td>
+                <td>@(_mjdConverter.ToMjd(obs.Date) + 1)</td>
                 <td>@obs.Object</td>
                 <td>@(obs.ExpTime?.ToString("F1") ?? "??")</td>
                 <td>@(obs.N.ToString() ?? "??")</td>
