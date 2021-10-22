@@ -2,9 +2,11 @@
 
 @using DIPolWeb.FetchData
 @using System.Globalization
+@using DIPolWeb.Services
 
 @inject HttpClient _http
 @inject ISearchSpecificationProvider _searchSpecificationProvider
+@inject IMjdConverter _mjdConverter
 
 <h1>Dipol observations</h1>
 
@@ -54,6 +56,7 @@ else
         <thead>
             <tr>
                 <th>Date</th>
+                <th>MJD</th>
                 <th>Object</th>
                 <th>Exposure (s)</th>
                 <th>Images</th>
@@ -66,9 +69,10 @@ else
             {
             <tr>
                 <td>@obs.Date.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
+                <td>@(_mjdConverter.ToMjd(obs.Date.ToDateTime(default, DateTimeKind.Utc)).ToString("F2"))</td>
                 <td>@obs.Object</td>
                 <td>@(obs.ExpTime?.ToString("F1") ?? "??")</td>
-                <td>@(@obs.N.ToString() ?? "??")</td>
+                <td>@(obs.N.ToString() ?? "??")</td>
                 <td>@obs.Instrument</td>
                 <td>@obs.Telescope</td>
             </tr>
