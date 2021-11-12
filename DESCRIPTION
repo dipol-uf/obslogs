@@ -29,4 +29,6 @@ Depends:
     jsonlite,
     fs,
     readxl,
-    box
+    box,
+    DBI,
+    RSQLite
