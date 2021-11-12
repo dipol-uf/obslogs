@@ -45,8 +45,7 @@ jobs:
       
       - name: Produce log
         run: |
-          source("./R/proc.R")
-        shell: Rscript {0}
+          Rscript -e 'source("./R/proc.R")'
       
       - name: Upload results
         uses: actions/upload-artifact@main
