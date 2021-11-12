@@ -28,4 +28,5 @@ Depends:
     parallel,
     jsonlite,
     fs,
-    readxl
+    readxl,
+    box

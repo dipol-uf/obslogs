@@ -45,9 +45,6 @@ jobs:
       
       - name: Produce log
         run: |
-          source("./R/write_fixed.R")
-          source("./R/proc_duf.R")
-          source("./R/proc_dp2.R")
           source("./R/proc.R")
         shell: Rscript {0}
       
