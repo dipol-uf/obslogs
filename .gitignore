@@ -450,3 +450,4 @@ $RECYCLE.BIN/
 
 .vscode/*
 src/view/wwwroot/sample-data/*
+.Rproj.user

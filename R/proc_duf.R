@@ -1,5 +1,15 @@
+box::use(
+  readxl[read_xls],
+  dplyr[transmute, filter],
+  lubridate[as_date],
+  forcats[as_factor],
+  readr[parse_double, parse_integer]
+  
+)
+
+#' @export
 get_duf_obs <- function(duf_log_path = duf_log) {
-  readxl::read_xls(
+  read_xls(
     duf_log_path,
     col_types = c(
       "date",
@@ -10,16 +20,16 @@ get_duf_obs <- function(duf_log_path = duf_log) {
       "numeric",
       "text"
     )) |>
-    dplyr::transmute(
-      Date = lubridate::as_date(Date),
-      Type = forcats::as_factor(Type),
+    transmute(
+      Date = as_date(Date),
+      Type = as_factor(Type),
       Object = `Star name`,
-      ExpTime = `Exposure time` |> readr::parse_double(),
-      N = (!!as.name("# observations")) |> readr::parse_integer(),
+      ExpTime = `Exposure time` |> parse_double(),
+      N = (!!as.name("# observations")) |> parse_integer(),
       Focus,
       Comment = Comments,
-      Instrument = forcats::as_factor("DIPol-UF"),
-      Telescope = forcats::as_factor("NOT")
+      Instrument = as_factor("DIPol-UF"),
+      Telescope = as_factor("NOT")
     ) |>
-    dplyr::filter(!is.na(Object))
+    filter(!is.na(Object))
 }

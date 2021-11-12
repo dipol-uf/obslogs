@@ -1,16 +1,29 @@
-
+box::use(
+  vctrs[vec_slice, vec_c, vec_size, vec_is_empty, vec_init, `vec_slice<-`],
+  stringr[str_match, str_to_sentence, str_which, str_subset, str_replace, str_trim],
+  purrr[map, map2, map_int, reduce, pmap_int, map2_int, map_dfr],
+  furrr[future_map_dfr],
+  dplyr[mutate, everything, if_else, n, bind_rows, filter, group_split, arrange, select],
+  readr[parse_double, parse_integer],
+  forcats[as_factor],
+  magrittr[extract],
+  brio[read_lines],
+  lubridate[dmy, ymd, days, years],
+  tibble[as_tibble],
+  rlang[set_names, list2, is_na]
+)
 
 get_date_comment <- function(str) {
-  str <- vctrs::vec_slice(str, 1L)
-  stringr::str_match(
+  str <- vec_slice(str, 1L)
+  str_match(
     str,
     "^\\s*(\\d{1,2})\\s*[/7]\\s*(\\d{1,2})\\s*[/7]\\s*(\\d{1,2})\\s*(.*)\\s*$"
   ) |>
-    magrittr::extract(, -1L) -> parsed
+    extract(, -1L) -> parsed
 
   list(
-    Date = lubridate::dmy(paste(parsed[1], parsed[2], parsed[3], sep = "/")),
-    Comment = stringr::str_to_sentence(parsed[4])
+    Date = dmy(paste(parsed[1], parsed[2], parsed[3], sep = "/")),
+    Comment = str_to_sentence(parsed[4])
   )
 }
 
@@ -64,30 +77,30 @@ parse_with_pattern <- function(
   txt, pattern, names, id
 ) {
   txt |>
-    stringr::str_match(pattern) |>
-    tibble::as_tibble(.name_repair = "minimal") |>
-    rlang::set_names(c("DISCARD", names)) |>
-    dplyr::mutate(
-      Id = seq_len(dplyr::n()),
+    str_match(pattern) |>
+    as_tibble(.name_repair = "minimal") |>
+    set_names(c("DISCARD", names)) |>
+    mutate(
+      Id = seq_len(n()),
       MatchId = id,
-      .before = dplyr::everything()
+      .before = everything()
     )
 }
 
 get_objects <- function(str) {
-  patterns <- vctrs::vec_c(
+  patterns <- vec_c(
     dp2_pattern_1,
     dp2_pattern_2,
     dp2_pattern_3,
     dp2_pattern_4
   )
-  str <- vctrs::vec_slice(str, -1L) |>
-    stringr::str_replace("\t", " ")
+  str <- vec_slice(str, -1L) |>
+    str_replace("\t", " ")
 
   patterns |>
-    purrr::reduce(stringr::str_subset, negate = TRUE, .init = str) |>
-    stringr::str_trim() |>
-    stringr::str_to_sentence() -> comments
+    reduce(str_subset, negate = TRUE, .init = str) |>
+    str_trim() |>
+    str_to_sentence() -> comments
 
   parse_with_pattern(
       str,
@@ -118,36 +131,36 @@ get_objects <- function(str) {
   ) -> match_4
 
 
-  match <- dplyr::bind_rows(
+  match <- bind_rows(
     match_1,
     match_2,
     match_3,
     match_4
   ) |>
-    dplyr::filter(!is.na(DISCARD))
+    filter(!is.na(DISCARD))
 
   match |>
-    dplyr::mutate(
-      Test = purrr::pmap_int(
-        match, 
+    mutate(
+      Test = pmap_int(
+        match,
         function(...) {
-          args <- rlang::list2(...)
+          args <- list2(...)
           result <-
-            purrr::map2_int(
+            map2_int(
               args,
               rev(seq_along(args)),
                ~is.na(.x) * .y
             ) |> sum()
 
-          n_exp_time <- nchar(stringr::str_replace(args$ExpTime, "\\s*sec", ""))
-          if (vctrs::vec_is_empty(n_exp_time) || rlang::is_na(n_exp_time)) {
+          n_exp_time <- nchar(str_replace(args$ExpTime, "\\s*sec", ""))
+          if (vec_is_empty(n_exp_time) || is_na(n_exp_time)) {
             n_exp_time <- 2L
           }
-          
+
           if (
-            rlang::is_na(args$ExpTime) &&
-            rlang::is_na(args$N) && 
-            rlang::is_na(args$Description)
+            is_na(args$ExpTime) &&
+            is_na(args$N) &&
+            is_na(args$Description)
           ) {
             .Machine$integer.max
           } else {
@@ -159,94 +172,97 @@ get_objects <- function(str) {
 
 
   match |>
-    dplyr::group_split(Id) |>
-    purrr::map(
-      dplyr::filter,
+    group_split(Id) |>
+    map(
+      filter,
       Test == min(Test)
     ) |>
-    purrr::map(dplyr::arrange, MatchId) |>
-    purrr::map_dfr(vctrs::vec_slice, 1L)  -> match
+    map(arrange, MatchId) |>
+    map_dfr(vec_slice, 1L)  -> match
 
-  if (vctrs::vec_size(match) != 0L) {
+  if (vec_size(match) != 0L) {
     match <- match |>
-      dplyr::filter(Test < .Machine$integer.max) |>
-      dplyr::select(-DISCARD, -Id, -MatchId, -Test)
+      filter(Test < .Machine$integer.max) |>
+      select(-DISCARD, -Id, -MatchId, -Test)
   }
 
   list(Objects = match, Comments = comments)
 }
 
+
+
+#' @export
 get_dp2_obs <- function(dp2_log_path = dp2_log) {
-  txt <- brio::read_lines(dp2_log_path)
-  start <- stringr::str_which(
+  txt <- read_lines(dp2_log_path)
+  start <- str_which(
     txt,
     "^\\s*\\d{1,2}\\s*[/7]\\s*\\d{1,2}\\s*[/7]\\s*\\d{1,2}"
   )
-  end <- vctrs::vec_c(start[-1], vctrs::vec_size(txt) + 1L)
+  end <- vec_c(start[-1], vec_size(txt) + 1L)
 
-  purrr::map2(start, end, ~vctrs::vec_slice(txt, seq(.x, .y - 1L))) |>
-    purrr::map(~vctrs::vec_slice(.x, nzchar(.x))) |>
-    purrr::map(stringr::str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
+  map2(start, end, ~vec_slice(txt, seq(.x, .y - 1L))) |>
+    map(~vec_slice(.x, nzchar(.x))) |>
+    map(str_subset, "^\\s*-+\\s*$", negate = TRUE) -> nights
 
   nights |>
-    furrr::future_map_dfr(
+    future_map_dfr(
     # purrr::map_dfr(
       function(x) {
         dt_cm <- get_date_comment(x)
         obj_cm <-  get_objects(x)
         cm <- c(dt_cm$Comment, obj_cm$Comments)
-        cm <- vctrs::vec_slice(cm, nzchar(cm)) |>
+        cm <- vec_slice(cm, nzchar(cm)) |>
           paste(collapse = "; ")
 
-        data <- dplyr::mutate(
+        data <- mutate(
             obj_cm$Objects,
             Date = dt_cm$Date,
-            .before = dplyr::everything()
+            .before = everything()
           ) |>
-          dplyr::mutate(Comment = cm)
+          mutate(Comment = cm)
 
         data
-      }
-      ,.progress = TRUE
+      },
+      .progress = TRUE
     ) |>
-    dplyr::mutate(
+    mutate(
       Focus = Focus |>
-        stringr::str_replace("=", "-") |>
-        stringr::str_replace(",", ".") |>
-        stringr::str_replace("^-+$|n/a", NA_character_) |>
-        readr::parse_double(),
+        str_replace("=", "-") |>
+        str_replace(",", ".") |>
+        str_replace("^-+$|n/a", NA_character_) |>
+        parse_double(),
       N = N |> 
         strsplit("/") |>
-        purrr::map(readr::parse_integer) |>
-        purrr::map_int(sum),
+        map(parse_integer) |>
+        map_int(sum),
       ExpTime = ExpTime |>
-        stringr::str_replace("\\s*sec", "") |>
-        readr::parse_double(),
-      Object = dplyr::if_else(
+        str_replace("\\s*sec", "") |>
+        parse_double(),
+      Object = if_else(
         !is.na(ExpTime) & ExpTime > 1800,
         paste(Object, ExpTime),
         Object
       ),
-      ExpTime = dplyr::if_else(ExpTime > 1800, NA_real_, ExpTime),
-      Instrument = forcats::as_factor("DIPol-2"),
-      Telescope = forcats::as_factor("T60")
+      ExpTime = if_else(ExpTime > 1800, NA_real_, ExpTime),
+      Instrument = as_factor("DIPol-2"),
+      Telescope = as_factor("T60")
     ) -> result
 
     which(is.na(result[["Date"]])) -> na_dates
-    if (!vctrs::vec_is_empty(na_dates)) {
-      vctrs::vec_c(
+    if (!vec_is_empty(na_dates)) {
+      vec_c(
         0L,
         which(diff(na_dates) != 1L),
         length(na_dates)
       ) -> na_groups
-      purrr::map2(
+      map2(
         na_groups[-length(na_groups)] + 1L,
         na_groups[-1],
         ~list(
           Start = na_dates[.x],
           End = na_dates[.y],
-          Value = lubridate::ymd("1970/01/01") +
-            lubridate::days(
+          Value = ymd("1970/01/01") +
+            days(
               0.5 * (
                 unclass(result[["Date"]][na_dates[.x] - 1L]) +
                 unclass(result[["Date"]][na_dates[.y] + 1L])
@@ -255,24 +271,24 @@ get_dp2_obs <- function(dp2_log_path = dp2_log) {
         )
       ) -> na_gaps
 
-      new_dates <- vctrs::vec_init(result[["Date"]], vctrs::vec_size(result))
+      new_dates <- vec_init(result[["Date"]], vec_size(result))
       for (item in na_gaps) {
-        vctrs::vec_slice(
+        vec_slice(
           new_dates,
           seq(from = item[["Start"]], to = item[["End"]])
         ) <- item[["Value"]]
       }
     result |>
-      dplyr::mutate(
-        Date = dplyr::if_else(is.na(Date), new_dates, Date)
+      mutate(
+        Date = if_else(is.na(Date), new_dates, Date)
       ) -> result
 
   }
   result |>
-    dplyr::mutate(
-      Date = dplyr::if_else(
-        Date < lubridate::ymd("2010/01/01"),
-        Date + lubridate::years(10L),
+    mutate(
+      Date = if_else(
+        Date < ymd("2010/01/01"),
+        Date + years(10L),
         Date
       )
     )
