@@ -26,7 +26,7 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v1
         with:
-          crayon.enabled: false
+          crayon.enabled: 'FALSE'
 
       - name: Query dependencies
         run: |
