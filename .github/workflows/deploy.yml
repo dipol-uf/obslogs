@@ -24,7 +24,7 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v1
         with:
-          crayon.enabled: FALSE
+          crayon.enabled: 'FALSE'
           use-public-rspm: true
 
       - name: Query dependencies
