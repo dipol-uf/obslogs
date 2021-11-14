@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DIPolWeb.FetchData.Json;
 using Pidgin;
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
@@ -46,7 +47,7 @@ internal class NasaAdsLikeSpecification : ISearchSpecification
         }
     }
 
-    public bool SatisfiesConditions(DipolObservation obs) =>
+    public bool SatisfiesConditions(IData obs) =>
         _specs.All(spec => spec.Matches(obs));
 
 

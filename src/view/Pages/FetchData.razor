@@ -7,6 +7,7 @@
 @inject HttpClient _http
 @inject ISearchSpecificationProvider _searchSpecificationProvider
 @inject IMjdConverter _mjdConverter
+@inject IDataSource _dataSource
 
 <h1>Dipol observations</h1>
 
@@ -26,7 +27,7 @@
 </p>
 
 @*First time loading, no data is yet available*@
-@if (_observations.Length == 0)
+@if (_observations.Count == 0)
 {
     <p><em>Loading...</em></p>
 }
@@ -45,7 +46,7 @@ else
         }
         else
         {
-            <p><code>@count</code> / <code>@_observations.Length</code> <em>entries match search criteria.</em></p>
+            <p><code>@count</code> / <code>@_observations.Count</code> <em>entries match search criteria.</em></p>
         }
     }
     else
@@ -71,8 +72,8 @@ else
                 <td>@obs.Date.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)</td>
                 <td>@(_mjdConverter.ToMjd(obs.Date) + 1)</td>
                 <td>@obs.Object</td>
-                <td>@(obs.ExpTime?.ToString("F1") ?? "??")</td>
-                <td>@(obs.N.ToString() ?? "??")</td>
+                <td>@(obs.ExposureTime?.ToString("F1") ?? "??")</td>
+                <td>@(obs.ImageCount.ToString() ?? "??")</td>
                 <td>@obs.Instrument</td>
                 <td>@obs.Telescope</td>
             </tr>
@@ -82,16 +83,16 @@ else
 }
 
 @code {
-    private DipolObservation[] _observations = Array.Empty<DipolObservation>();
+    private IReadOnlyList<IData> _observations = Array.Empty<IData>();
     private bool _shouldRender = true;
     private string Value { get; set; } = string.Empty;
 
-    private IEnumerable<DipolObservation> Items { get; set; } = Enumerable.Empty<DipolObservation>();
+    private IEnumerable<IData> Items { get; set; } = Enumerable.Empty<IData>();
 
     private void FilterData()
     {
         var val = Value;
-        IEnumerable<DipolObservation> newObservations;
+        IEnumerable<IData> newObservations;
         ISearchSpecification spec;
 
         if (string.IsNullOrWhiteSpace(val))
@@ -118,8 +119,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _observations = await _http.GetFromJsonAsync<DipolObservation[]>("sample-data/obslog.json")
-                        ?? throw new InvalidOperationException("Failed to load data");
+        _observations = await _dataSource.GetData().ToListAsync();
 
         Items = _observations;
     }

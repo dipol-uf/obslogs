@@ -1,6 +1,8 @@
-﻿namespace DIPolWeb.FetchData;
+﻿using DIPolWeb.FetchData.Json;
+
+namespace DIPolWeb.FetchData;
 
 internal interface ISearchSpecification
 {
-    bool SatisfiesConditions(DipolObservation obs);
+    bool SatisfiesConditions(IData obs);
 }
