@@ -2,7 +2,7 @@ name: Parse Logs & Update static site
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, 'update-workflow' ]
   workflow_dispatch:
 
 
@@ -55,12 +55,12 @@ jobs:
           pwsh
 
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE_BRANCH: master
-          BRANCH: gh-pages
-          FOLDER: published/wwwroot
-          SINGLE_COMMIT: true
+      # - name: Deploy
+      #   uses: JamesIves/github-pages-deploy-action@releases/v3
+      #   with:
+      #     ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     BASE_BRANCH: master
+      #     BRANCH: gh-pages
+      #     FOLDER: published/wwwroot
+      #     SINGLE_COMMIT: true
 
