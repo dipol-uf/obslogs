@@ -26,22 +26,16 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
-
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: src/processor
+          extra-packages: any::devtools
 
       - name: Produce log
         run: |
-          source("./R/write_fixed.R")
-          source("./R/proc_duf.R")
-          source("./R/proc_dp2.R")
-          source("./R/proc.R")
+          devtools::install_local("src/processor", force = TRUE)
+          processor::process_observation_logs()
         shell: Rscript {0}
 
       - name: Upload results
