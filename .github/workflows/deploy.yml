@@ -4,25 +4,27 @@ on:
   push:
     branches: [ master ]
   workflow_dispatch:
-    
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET preview
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.100-rc.1.21463.6'
+          dotnet-version: '6.0.201'
 
       - name: Build site
-        run: | 
+        run: |
           dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/DIPolWeb.csproj
-       
+
       - name: Set up R
-        uses: r-lib/actions/setup-r@v1
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
 
       - name: Query dependencies
         run: |
@@ -31,18 +33,9 @@ jobs:
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
-      - name: Cache packages
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ hashFiles('.github/R-version') }}-1-
-
       - name: Install dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-      
+        uses: r-lib/actions/setup-r-dependencies@v2
+
       - name: Produce log
         run: |
           source("./R/write_fixed.R")
@@ -50,7 +43,7 @@ jobs:
           source("./R/proc_dp2.R")
           source("./R/proc.R")
         shell: Rscript {0}
-      
+
       - name: Upload results
         uses: actions/upload-artifact@main
         with:
