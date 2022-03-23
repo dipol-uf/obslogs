@@ -14,50 +14,50 @@ get_date_comment <- function(str) {
   )
 }
 
-exp_time_pattern <- "~?((?:\\d+|\\d+[\\.,]\\d+)(?:\\s+sec)?)"
-obj_name_pattern <- "([\\w\\+\\.]+(?:\\s{1,3}[\\w\\+\\.]+)?)"
-type_pattern <- "(?:\\s+([\\w -|]+))?"
-dp2_pattern_1 <- paste0(
+exp_time_pattern <- function() "~?((?:\\d+|\\d+[\\.,]\\d+)(?:\\s+sec)?)"
+obj_name_pattern <- function() "([\\w\\+\\.]+(?:\\s{1,3}[\\w\\+\\.]+)?)"
+type_pattern <- function() "(?:\\s+([\\w -|]+))?"
+dp2_pattern_1 <- function() paste0(
   "^\\s*",
   "(?:\\*(?:[Nn]ot|[Aa]lso\\s*not)\\*\\s*)?",
-  obj_name_pattern,                            # Object name
+  obj_name_pattern(),                            # Object name
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "\\s+",
   "(\\d+(?:/\\d+)?)",                          # N
   "\\s+",
-  exp_time_pattern,                            # ExpTime
-  type_pattern                                 # Type
+  exp_time_pattern(),                            # ExpTime
+  type_pattern()                                 # Type
 )
 
-dp2_pattern_2 <- paste0(
+dp2_pattern_2 <- function() paste0(
   "^\\s*",
-  obj_name_pattern,                            # Object name
+  obj_name_pattern(),                            # Object name
   "\\s+",
-  exp_time_pattern,                            # ExpTime
+  exp_time_pattern(),                            # ExpTime
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "(?:\\s+(\\d+(?:/\\d+)?))?",                 # N
-  type_pattern                                 # Type
+  type_pattern()                                 # Type
 )
 
-dp2_pattern_3 <- paste0(
+dp2_pattern_3 <- function() paste0(
   "^\\s*",
-  obj_name_pattern,                            # Object name
+  obj_name_pattern(),                            # Object name
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "\\s+",
-  exp_time_pattern,                            # ExpTime
-  type_pattern                                 # Type
+  exp_time_pattern(),                            # ExpTime
+  type_pattern()                                 # Type
 )
 
-dp2_pattern_4 <- paste0(
+dp2_pattern_4 <- function() paste0(
   "^\\s*",
-  obj_name_pattern,                            # Object name
+  obj_name_pattern(),                            # Object name
   "\\s+",
   "([+-]?\\d+[\\.,]?\\d+|-+||n/a)",            # Focus
   "(?:\\s+(\\d+(?:/\\d+)?))?",                 # N
-  type_pattern                                 # Type
+  type_pattern()                                 # Type
 )
 
 parse_with_pattern <- function(
@@ -76,10 +76,10 @@ parse_with_pattern <- function(
 
 get_objects <- function(str) {
   patterns <- vctrs::vec_c(
-    dp2_pattern_1,
-    dp2_pattern_2,
-    dp2_pattern_3,
-    dp2_pattern_4
+    dp2_pattern_1(),
+    dp2_pattern_2(),
+    dp2_pattern_3(),
+    dp2_pattern_4()
   )
   str <- vctrs::vec_slice(str, -1L) |>
     stringr::str_replace("\t", " ")
@@ -91,28 +91,28 @@ get_objects <- function(str) {
 
   parse_with_pattern(
       str,
-      dp2_pattern_1,
+      dp2_pattern_1(),
       c("Object", "Focus", "N", "ExpTime", "Description"),
       1L
   ) -> match_1
 
   parse_with_pattern(
       str,
-      dp2_pattern_2,
+      dp2_pattern_2(),
       c("Object", "ExpTime", "Focus", "N", "Description"),
       2L
   ) -> match_2
 
   parse_with_pattern(
       str,
-      dp2_pattern_3,
+      dp2_pattern_3(),
       c("Object", "Focus", "ExpTime", "Description"),
       3L
   ) -> match_3
 
   parse_with_pattern(
       str,
-      dp2_pattern_4,
+      dp2_pattern_4(),
       c("Object", "Focus", "N", "Description"),
       4L
   ) -> match_4
@@ -143,10 +143,10 @@ get_objects <- function(str) {
           if (vctrs::vec_is_empty(n_exp_time) || rlang::is_na(n_exp_time)) {
             n_exp_time <- 2L
           }
-          
+
           if (
             rlang::is_na(args$ExpTime) &&
-            rlang::is_na(args$N) && 
+            rlang::is_na(args$N) &&
             rlang::is_na(args$Description)
           ) {
             .Machine$integer.max
@@ -176,7 +176,7 @@ get_objects <- function(str) {
   list(Objects = match, Comments = comments)
 }
 
-get_dp2_obs <- function(dp2_log_path = dp2_log) {
+get_dp2_obs <- function(dp2_log_path) {
   txt <- brio::read_lines(dp2_log_path)
   start <- stringr::str_which(
     txt,

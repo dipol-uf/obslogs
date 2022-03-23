@@ -4,60 +4,47 @@ on:
   push:
     branches: [ master ]
   workflow_dispatch:
-    
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET preview
+      - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.100-rc.1.21463.6'
+          dotnet-version: '6.0.201'
 
       - name: Build site
-        run: | 
-          dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/DIPolWeb.csproj
-       
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v1
-
-      - name: Query dependencies
         run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
+          dotnet publish -c Release -o published -p:BlazorEnableCompression=false ./src/view/DIPolWeb.csproj
 
-      - name: Cache packages
-        uses: actions/cache@v2
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
         with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ hashFiles('.github/R-version') }}-1-
+          use-public-rspm: true
 
       - name: Install dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-      
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: src/processor
+          extra-packages: any::devtools
+
       - name: Produce log
         run: |
-          source("./R/write_fixed.R")
-          source("./R/proc_duf.R")
-          source("./R/proc_dp2.R")
-          source("./R/proc.R")
+          devtools::install_local("src/processor", force = TRUE)
+          processor::process_observation_logs()
         shell: Rscript {0}
-      
+
       - name: Upload results
         uses: actions/upload-artifact@main
         with:
           name: obslogs
           path: output
 
-      - name: Fixing GH Pages
+      - name: Fix GH Pages
         run: |
           touch ./published/wwwroot/.nojekyll
           mkdir ./published/wwwroot/sample-data
