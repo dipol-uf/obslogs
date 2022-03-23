@@ -1,4 +1,4 @@
-get_duf_obs <- function(duf_log_path = duf_log) {
+get_duf_obs <- function(duf_log_path) {
   readxl::read_xls(
     duf_log_path,
     col_types = c(
