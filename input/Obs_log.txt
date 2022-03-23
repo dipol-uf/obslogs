@@ -1693,7 +1693,7 @@ TXS0506   -1.35     64    30  AGN
 TX UMa    -1.05    192     7  binary
 PKS0829   -1.35     48    45  AGN
 
-14/01/08
+14/01/18
 
 LSI61303  -1.35     96    20  X-ray binary
 TXS0506   -1.35     64    30  AGN
@@ -4259,6 +4259,898 @@ LS5039      15   -2.62    192  x-ray binary
 13/06/21   poor seeing
 
 LS5039      15   -2.42    192  x-ray binary
+
+16/06/21   Moon
+
+LS5039      15   -2.45    256  X-ray binary
+
+17/06/21   Moon
+
+4U1543-47   45   -2.52    128  X-ray binary
+LS5039      15   -2.54    144  x-ray binay 
+
+
+19/06/21
+
+4U1543-47   45   -2.45    164  X-ray binary
+LS5039      15   -2.54    40   x-ray binay 
+stopped due to hith RH
+
+16/10/21  Moon, thin clouds
+
+HD25443      3  -2.63     64  H-pol std
+DK Tau      30  -2.79    128  T Tau / dipper
+LkCa15      20  -2.87    128  T Tau/dipper
+HD32297      5  -2.55    160  Kepler star
+HD52711      3  -2.40    448  zero-pol std
+
+18/10/21 Moon, clear
+
+DK Tau     30   -2.60     96  T Tau star
+LkCa15     20   -2.65     96  T tau star
+HD25621     2   -2.10    768  zero-pol std
+HD43384     3   -2.16     64  high-pol std
+HD36546     5   -2.16    256  Kepler star
+
+19/10/21 Moon, clear
+
+DK Tau     30   -2.60     96  T Tau star
+LkCa15     20   -2.60     96  T Tau star
+HD24546     3   -2.10    800  zero-pol star
+
+20/10/21 Moon, clear
+
+HD 21447    3   -2.12    768  zero-pol star(Polish)
+LkCa15     20   -2.66    128  T Tau star
+HD52711     3   -2.12    684  zero-pol std
+
+21/10/21 Moon, clear
+
+IS Tau     30   -2.79     96  T Tau star
+LkCa15     20   -2.82    160  T Tau star
+HD30562     3   -2.10    832  zero-pol std
+
+22/10/21 Moon, clear
+
+HD166       3   -2.15    512  Kepler star
+LkCa15     20   -2.70    176  T Tau star
+HD33256     3   -2.00    832  zero-pol std
+
+23/10/21  Moon, clear, clouds after 1:30 am
+
+HD377       5   -2.25    316  Kepler star
+           stopped due to clouds
+
+24/10/21  Moon, clear
+
+BD+59 389   5   -2.61     96  high-pol star 
+LkCa15     20   -2.66    112  T Tau star
+1A0535     10   -2.66    128  X-ray binary (close to the Moon)
+HD45067     5   -2.15    576  zero-pol star
+
+25/10/21  Moon, clear
+
+LkCa15     20   -2.60    160  T Tau star
+1A0535     10   -2.66    128  X-ray binary
+HD49933     3   -2.15    796  zero-pol star
+
+26/10/21 Moon, clear
+
+LkCa15     20   -2.62    160  T Tau star
+1a0535     10   -2.62    128  X-ray binary
+HD29391     3   -2.10    832  zero-pol star
+
+27/10/21  Moon, clear
+
+LkCa15     20   -2.65    192  T Tau star
+1A0535     10   -2.60    160  X-rays binary
+
+28/10/21  Thin clouds, Moon
+
+HR8799      3   -2.10        Kepler star
+            stopped ue to dense clouds
+
+29/10/21  Moon, clear
+
+HR8799      3   -2.14    256 Kepler star
+LkCa15     20   -2.60    144 T Tau star
+1A0535     10   -2.63    160 X-rays binary
+
+
+30/10/21  Moon, clear
+
+I tried to find V4641 Sgr, but I could not
+find any stars at the field. Maybe I was 
+doing something wrong, but I think that there 
+was no light on the cameras (I did the same
+procedure as usual). Maybe Dipol was unmounted,
+but I changed the TPoint before the obserrvaitons
+as usual... Or maybe it was just too bright at 
+6:30 to observe anything. I think it's possible
+to start observations only after 6:30-6:40 pm
+anyway due to the Sun. 
+
+30/10/21 Clear, moon
+
+LkCa15   20   -2.60    160  T Tau star
+1A0535    7   -2.60    160  X-rays binary
+HD43042   2   -2.05    768  zero-pol star
+HD37495   3   -2.10    768  zero-pol star
+
+31/10/21 Clear, small moon
+
+V4641Sgr 30   -2.30     60    x-rays binary
+1A0535    7   -2.56    196    x-rays binary
+V662 Cas 20   -2.56    128    x-rays binary
+J0211+
+1051     30   -2.60     96    AGN
+LkCa15   20   -2.60    160    T Tau star
+
+01/11/21   Clear, no moon 
+
+J0211    30   -2.60    112    AGN
+LkCa15   20   -2.58    160    T Tau star
+1A0535    7   -2.58    180    x-ray binary
+HD35681   6   -2.08    352    zero-pol std
+
+02/11/21    clear, moon
+
+V4641Sgr 30   -2.35     72    x-ray binary
+J0211    30   -2.50    256    AGN
+LkCa15   20   -2.55    160    T Tau star
+1A0535    7   -2.55    160    x-ray binary
+HD38858   4   -2.10    768    zero-pol std
+
+
+
+03/11/21    clear, no moon
+
+V4641Sgr 30   -2.35     96    x-ray binary
+J0211    30   -2.52    256    AGN
+LkCa15   20   -2.60    160    T Tau star
+1A0535    7   -2.55    160    x-ray binary
+
+04/11/21    clear, no moon
+
+J0211    30   -2.55    272    AGN    
+LkCa15   20   -2.67    160    T Tau star
+1A0535    7   -2.67    192    x-ray binary
+
+05/11/21   clear, no moon
+
+J0211    30   -2.60    256    AGN
+LkCa15   20   -2.63    160    T Tau star
+1A0535    7   -2.66    192    x-ray binary
+
+06/11/21   clear, no Moon
+
+J0211    30   -2.60    272    AGN
+LkCa15   20   -2.60    160    T Tau star (wrong name, J02110273-340)
+1A0535    7   -2.60    192    x-ray binary
+
+07/11/21
+
+HD206772  3   -2.55    256    Euclid star
+BD701200 10   -2.58    128    Euclid star
+LkCa15   20   -2.60    160    T Tau star
+1A0535    7   -2.60    192    x-ray binary
+HD38858   4   -2.10           zero-pol std
+
+08/11/21  cloudy, no Moon
+
+LkCa15   20   -2.55    160   T Tau star
+1A0535    7   -2.55    192   x-ray binary
+HD29645   4   -2.10    768   zero-pol std
+ 
+10/11/21 
+
+TYC4466m61 10 -2.57    160   Euclid star
+LkCa15     20 -2.52    160   T Tau star
+1A0535      7 -2.52    200   x-ray binary
+HD38382     5 -2.12    768   zero-pol std
+
+11/11/21    thin clouds, rising Moon
+
+LkCa15     20  -2.51   192  T Tau star
+HD43386     3  -2.00   768  standard
+1A0535      7  -2.51        x-ray  binary
+
+17/11/21    Moon, high RH%
+
+LkCa15     20   -2.57  160  T Tau star
+1A0535      7   -2.62  200  x-ray binary
+
+18/11/21    Moon
+
+1A0535      7   -2.62  192  x-ray binary
+
+19/11/21    Moon
+
+1A0535      7   -2.62  192  x-ray binary
+
+the internet connection is very bad
+
+20/11/21
+
+There was an error on the T60 controlling 
+computer (as I understand something went 
+wrong with the observations of Japanese 
+colleagues)
+
+23/11/21 Clear, full moon
+TYC4467m22  20   -2.57  64  Euclid star
+TYC4470m16  20   -2.59  64  Euclid star
+HESS0632     5   -2.61 128  gammaray binary
+TYC8075m155 20   -2.64 128  Euclid star
+HD274784    20   -2.66 128  Euclid star
+HD75576      3   -2.70 128  Euclid star
+MAXI0903    30   -2.70  64  X-ray binary
+1A0535       7   -2.70 192  x-ray binary
+
+24/11/21 Clear, full moon
+TYC8075m382 20   -2.56  64  Euclid star
+HD274882     5   -2.62 256  Euclid star
+HESS0632     5   -2.72 256  gammaray binary
+MAXI0903    30   -2.74 128  X-ray binary
+
+25/11/21 Clear
+1A0535       7   -2.60 192  x-ray binary
+CD52905     15   -2.65 128  Euclid star
+HD274744     5   -2.65 256  Euclid star
+HESS0632     5   -2.72 256  gammaray binary
+MAXI0903    30   -2.70 144  X-ray binary
+
+26/11/21 Clear
+TYC4466m669 20   -2.44 128  Euclid star
+TYC4466m112 15   -2.54 128  Euclid star
+1A0535       7   -2.54 192  x-ray binary
+HD28420      5   -2.54 320  Euclid star
+HD274883     5   -2.59 352  Euclid star
+HESS0632     5   -2.67 256  gammaray binary
+MAXI0903    30   -2.67 144  X-ray binary
+
+27/11/21 Clear
+TYC4470m14  20   -2.48 128  Euclid star
+TYC4466m545 10   -2.55 128  Euclid star
+1A0535       7   -2.55 192  x-ray binary
+HD28328     10   -2.59 256  Euclid star
+LkCa15      20   -2.59  76  T Tau Star
+        stopped due to strong wind
+MAXI0903    30   -2.67 80/48  X-ray binary
+OJ287       30   -2.64  32  blazar
+
+06/01/22    clear, no Moon, clouds later
+
+LkCa15      20   -2.66 160  T Tau star
+LkCa153     30   -2.67  96  field star 3
+573_Recha   30   -2.73 128  asteroid
+OJ 287      30   -2.75 128  blazar
+
+07/01/22   clear
+
+LkCa15      20   -2.75 160  T Tau star
+LkCa154     10   -2.75  64  field star
+LkCa155     20   -2.75  96  field star
+LkCa156     30   -2.77  64  field star
+201_Penelope 30  -2.80 128  asteroid
+HESS0632    5    -2.80 256  gammaray binary
+MAXI0903    30   -2.82 128  X-ray binary
+
+08/01/22   clear
+
+LkCa15       20  -2.60 160  T Tau star
+LkCa157      20  -2.67  64  field star
+LkCa158      10  -2.67  64  field star
+LkCa159      20  -2.67  64  field star
+HD274869     20  -2.67 128  Euclid star
+HESS0632    5    -2.73 256  gammaray binary
+MAXI0903    30   -2.73 160  X-ray binary
+
+09/01/22 Moon
+
+LkCa15      20   -2.55 160  T Tau star
+LkCa160     40   -2.84 124  field star
+        stopped due to humidity rise
+161_Athor   30   -2.66 128  asteroid
+
+11/01/22 windy
+
+HD28329      3   -2.60 256  Euclid star
+HD31945      6   -2.60 256  Euclid star
+HD31959     10   -2.66 256  Euclid star
+1A0535       7   -2.66 192  X-ray binary
+HESS0632     5   -2.70 256  gammaray binary
+HD73725      3   -2.70 256  Euclid star
+MAXI0903    30   -2.72 128  X-ray binary
+TYC4131m681  8   -2.75 256  Euclid star
+TYC4131m852 15   -2.77 128  Euclid star
+
+12/01/22
+
+LkCa15      20   -2.65  160 T Tau star
+oj287       30   -2.71   64 blazar
+high clouds
+HESS0632     5   -2.72  256 gammaray binary
+high clouds
+
+13/01/22    bright Moon, clear
+
+LkCa15      20   -2.56  160 T Tau star
+HD31862      8   -2.62  256  Euclid star
+HD274857    10   -2.70  256  Euclid star
+MAXI0903    30   -2.72  128  X-ray binary
+HESS0632     5   -2.77  256  gammaray binary
+
+14/01/22   bright Moon, thin clouds
+
+LkCa15     20   -2.65   160 T Tau star
+LkCa161    30   -2.65    96 field star
+MAXI0903   30   -2.69   128 X-ray binary
+TYC4131m12 10   -2.78   384 Euclid star
+TYC4131m14 15   -2.80   128 Euclid star
+HERX1      30   -2.78   160 X-ray binary
+
+15/01/22   bright Moon
+HD26958     5   -2.58   256 Euclid star
+Stopped due to high RH
+
+16/01/22   bright moon
+HD27154     8   -2.58  256  Euclid star
+HD30953     8   -2.64  256  Euclid star
+HD26405     5   -2.66  192  Euclid star
+LkCa15     20   -2.65  160  T Tau star
+LkCa162    30   -2.68   16  photometry practicing
+OJ287      30   -2.68   80  blazar
+HESS0632    5   -2.72  256  gammray binary
+MAXI0903   30   -2.74  128  X-ray binary
+TYC4131m17  8   -2.78  128  Euclid star
+HERX1      30   -2.77  176  X-ray binary
+
+17/01/22   bright moon
+HD26550     5   -2.48  256  Euclid star
+HD272952    8   -2.52  256  Euclid star
+HD26454     5   -2.58  256  Euclid star
+HD272781   15   -2.62  256  Euclid star
+1A0535      7   -2.72  192  X-ray binary
+LkCa15     20   -2.66   32  T Tau star
+OJ287      30   -2.68   80  AGN
+MAXI0903   30   -2.73   96  X-ray binary
+TYC4131m327 12  -2.76  192  Euclid star
+HERX1      30   -2.78  128  X-ray binary
+
+18/01/22 bright moon, clear (HerX1 clouds)
+
+CD511106   15   -2.52  256  Euclid star
+CD491271   15   -2.61  144  Euclid star
+HD274880   15   -2.68  256  Euclid star
+HESS0632    5   -2.70  192  gammaray binary
+Oj287      30   -2.70   80  AGN
+HD43384     3   -2.40   32  high-pol star
+MAXI0903   30   -2.70  128  X-ray binary
+TYC4127m2136 10 -2.74   64  Euclid star
+HERX1      30   -2.74  128  X-ray binary
+
+19/01/22 bright moon, clear (2HF Thin clds)
+TYC8075m1468 12 -2.49  256  Euclid star
+CD501322    15  -2.59  256  Euclid star
+HD274866    15  -2.64  256  Euclid star
+HESS0632     5  -2.70  160  gammaray binary
+LkCa15      20  -2.65   16  T tau star
+IS Tau      20  -2.65   16   ----
+OJ287       30  -2.65   14   AGN
+MAXI0903    30  -2.67  128  X-ray binary
+TYC6021m759 10  -2.73  256  Euclid star
+HERX1       30  -2.73  144  X-ray binary
+
+20/01/22 clear, bright moon
+
+TYC8502m1525 12 -2.54  256  Euclid star
+LkCa15       20 -2.60  160  T Tau star
+Lkca163      30 -2.68   80  field star 
+1A0535        7 -2.72  192  X-ray binary
+HESS0632      5 -2.72  128  gammaray binary
+MAXI0903     30 -2.72  128  X-ray binary
+CPD193850    12 -2.74  128  Euclid star
+tau Boo      2  -2.27  832  exoplanet
+HERX1       30  -2.70  148  X-ray binary
+
+22/01/22   clear, rising Moon
+
+LkCa15     20   -2.60   56  T Tau star
+           stopped due to strong wind
+MAXI0903   30   -2.65  128  X-ray binary
+tau Boo    2    -2.27  832  exoplanet
+HERX1      45   -2.70  88   X-ray binary
+
+23/01/22 clear, windy
+TYC8080m1519  20  -2.63  192  Euclid star
+UC107807      20  -2.67  192  Euclid star
+M052252       20  -2.73  192  Euclid star
+1A0535         7  -2.75  192  X-ray binary
+HESS0632       5  -2.75  384  gammaray binary
+MAXI0903      30  -2.76  128  X-ray binary
+tau Boo       2   -2.3   576  exoplanet
+	stopped due to strong wind
+
+24/01/22 clear
+
+M04522503     20  -2.55  160  Euclid star
+TYC8072m1704  20  -2.63  144  Euclid star
+LkCa15        20  -2.65  128  T Tau star
+573_Recha     30  -2.65   96  asteroid
+MAXI0903      30  -2.68   40 X-ray binary
+closed due to wind
+
+26/01/22 clear
+
+HD272970      15  -2.50  192  Euclid star
+TYC8071m537   15  -2.60  160  Euclid star
+771_Lib       30  -2.69   96  asteroid
+136_Aus       30  -2.71   80  asteroid
+1A0535         7  -2.77  192  X-ray binary
+HESS0632       5  -2.77  336  gammaray binary
+MAXI0903      30  -2.82  128  X-ray binary
+tau Boo        2  -2.27  832  exoplanet
+HERX1         45  -2.75  112  X-ray binary
+
+27/01/22 clear
+
+HD272829      20  -2.60  192  Euclid star
+HESS0632       5  -2.62  256  gammaray binary
+LkCa15        20  -2.60  128  T Tau star
+1A0535         7  -2.66  192  X-ray binary
+HD75919        5  -2.66  256  Euclid star
+MAXI0903      30  -2.74  124  X-ray binary
+tau Boo        2  -2.27  832  exoplanet
+HERX1         45  -2.73  144  X-ray binary
+
+28/01/22 clear
+
+1A0535         7  -2.66  192  X-ray binary
+HESS0632       5  -2.70  256  gammaray binary
+MAXI0903      30  -2.73  128  X-ray binary
+tau Boo        2  -2.3   832  exoplanet
+HERX1         45  -2.75  144  X-ray binary
+
+29/01/22 clear
+
+1A0535         7  -2.63  192  X-ray binary
+HESS0632       5  -2.69  256  gammaray binary
+MAXI0903      30  -2.74  144  X-ray binary
+MAXI0903f1    30  -2.75  128  MAXI0903 FS1
+tau Boo        2  -2.3   832  exoplanet
+HERX1         45  -2.75  128  X-ray binary
+
+30/01/22 clear
+
+HESS0632       5  -2.59  256  gammaray binary
+LkCa15        20  -2.53  128  T Tau star
+1A0535         7  -2.64  192  X-ray binary
+MAXI0903      30  -2.72  144  X-ray binary
+MAXI0903f2    30  -2.72  128  MAXI0903 FS2
+tau Boo        2  -2.35  832  exoplanet
+HERX1         45  -2.72  160  X-ray binary
+
+03/02/22 clear
+1A0535         7  -2.55  192  X-ray binary
+LYCMA          5  -2.60  256  X-ray binary
+HESS0632       5  -2.64  192  gammaray binary
+MAXI0903      30  -2.67   80  X-ray binary
+OJ287         30  -2.68   96  AGN
+tau Boo        2  -2.27  832  exoplanet
+HERX1         45  -2.75  176  X-ray binary
+
+04/02/22 clear
+HESS0632       5  -2.53  256  gammaray binary
+1A0535         7  -2.63  192  X-ray binary
+LYCMA          5  -2.66  192  X-ray binary
+MAXI0903      30  -2.70  128  X-ray binary
+tau Boo        2  -2.30  832  exoplanet
+HERX1         45  -2.75  192  X-ray binary
+
+05/02/22 clear
+
+1A0535         7  -2.63  192  X-ray binary
+LYCMA          5  -2.65  192  X-ray binary
+MAXI0903      30  -2.70  128  X-ray binary
+tau Boo        2  -2.27  896  exoplanet
+HERX1         45  -2.73  192  X-ray binary
+
+06/02/22 clear, windy
+
+MAXI0903      30  -2.70   16  X-ray binary
+closed due to wind
+HERX1         45  -2.75  112  X-ray binary
+
+07/02/22   clear, windy
+
+OJ287         30  -2.60   96  AGN
+MAXI0903      30  -2.65   16  X-ray binary
+closed due to wind
+LYCMA          5  -2.65  320  X-ray binary
+MAXI0903      30  -2.74  128  X-ray binary
+tau Boo        2  -2.29  832  exoplanet
+HERX1         45  -2.75  192  X-ray binary
+
+08/02/22   clear
+
+1A0535         7  -2.59  192  X-ray binary
+HESS0632       5  -2.65  256  gammaray binary
+MAXI0903      30  -2.70  128  X-ray binary
+tau Boo        2  -2.30  832  exoplanet
+HERX1         45  -2.75  208  X-ray binary
+
+09/02/22
+HESS0632       5  -2.56  256  gammaray binary
+LY CMa         5  -2.56  256  x-ray binary
+MAXI0903      30  -2.65  128  X-ray binary
+tau Boo        2  -2.23  832  exoplanet
+HERX1         45  -2.70  128  X-ray binary
+
+10/02/22
+HESS0632       5  -2.56  256  gammaray binary
+LYCMa          5  -2.51  256  x-ray binary
+1A0535         7  -2.55  192  X-ray binary
+MAXI0903      30  -2.59  128  X-ray binary
+tau Boo        2  -2.25  832  exoplanet
+HERX1         45  -2.75  128  X-ray binary
+TYC2601m37    20  -2.75  192  HerX1 FS1
+
+11/02/22 bright moon
+HESS0632       5  -2.53  256  gammaray binary
+LYCMa          5  -2.58  256  x-ray binary
+TYC5964        5  -2.58  256  LY CMa FS1
+MJ070909      15  -2.58   96  LY CMa FS2
+MAXI0903      30  -2.62  128  x-ray binary FS
+tau Boo        2  -2.25  832  exoplanet
+HERX1         45  -2.75  192  X-ray binary
+
+12/02/22 bright moon, poor seeing 
+HESS0632       5  -2.58  256  gammaray binary
+LYCMa          5  -2.70  256  x-ray binary
+1A0535         7  -2.70  192  X-ray binary
+MAXI0903      30  -2.72  128  x-ray binary
+tau Boo        2  -2.27  832  exoplanet
+
+13/02/22 bright moon, windy 
+LYCMa          5  -2.62  256  x-ray binary
+HESS0632       5  -2.70  256  gammaray binary
+MAXI0903      30  -2.96  128  x-ray binary
+tau Boo        2  -2.37  960  exoplanet
+HERX1         45  -3.00  64   X-ray binary
+
+
+Time was incorrect (AM instead of PM).
+I fixed that.
+
+17/02/22 bright moon, high RH
+HESS0632       5  -2.75  256  gammaray binary
+MAXI0903      30  -2.75  32   x-ray binary
+finished because of cloudiness
+tau Boo        2  -2.32  832  exoplanet
+stopped due to clouds
+
+19/02/22 bright moon
+HerX1         45  -2.72  112  X-ray binary
+
+20/02/22 
+HESS0632       5  -2.55  192  gammaray binary
+1A0535         7  -2.56  192  X-ray binary
+LYCMA          5  -2.63  192  X-ray binary
+MAXI0903      30  -2.66  128  X-ray binary
+OJ287         30  -2.70   80  AGN
+tau Boo        2  -2.30  832  exoplanet
+HerX1         45  -2.77  128  X-ray binary
+HD163788       2  -2.71  384  Euclid star
+HD164057       2  -2.75  384  Euclid star
+
+21/02/22 high RH
+HESS0632       5  -2.54  256  gammaray binary
+LYCMA          5  -2.59  256  X-ray binary
+1A0535         7  -2.63  192  X-ray binary
+MAXI0903      30  -2.68  128  X-ray binary
+tau Boo        2  -2.35  832  exoplanet
+HerX1         45  -2.75  160  X-ray binary
+(HERX1: for the first 12 images, focus is off)
+
+22/02/22 clear, windy
+HESS0632       5  -2.61  256  gammaray binary
+LYCMA          5  -2.65  256  X-ray binary
+1A0535         7  -2.68  192  X-ray binary
+MAXI0903      30  -2.75  128  X-ray binary
+tau Boo        2  -2.35  864  exoplanet
+HerX1         45  -2.75  176  X-ray binary
+closed due to wind
+
+23/02/22 clear, windy
+tau Boo        2  -2.13  784  exoplanet
+HerX1         45  -2.75  96   X-ray binary
+
+24/02/22 clear, windy
+LYCMA          5  -2.38  256  X-ray binary
+HESS0632       5  -2.43  256  gammaray binary
+OJ 287        30  -2.50   80  AGN
+1A0535         7  -2.53  192  X-ray binary
+MAXI0903      30  -2.53  108  X-ray binary
+tau Boo        2  -2.20  832  exoplanet
+HerX1         45  -2.70  48   X-ray binary
+Stopped due to wind
+
+
+25/02/22 clear, windy
+windy, not possible to observe
+MAXI0903      30  -2.53  128  X-ray binary
+tau Boo        2  -2.12  832  exoplanet
+HerX1         45  -2.70  144  X-ray binary
+
+
+26/02/22 clear, windy
+LYCMA          5  -2.38  172  X-ray binary
+stopped due to high wind
+
+
+27/02/22 clear, windy
+
+LYCMA          5  -2.38  192  X-ray binary
+OJ287         30  -2.50   96  AGN
+HESS0632       5  -2.50  256  gammaray binary
+1A0535         7  -2.53  192  X-ray binary
+MAXI0903      30  -2.61  128  X-ray binary
+tau Boo        2  -2.15  832  exoplanet
+HerX1         45  -2.70  128  X-ray binary
+
+28/02/22 clear
+1A0535         7  -2.53  192  X-ray binary
+HESS0632       5  -2.56  256  gammaray binary
+LYCMA          5  -2.56  192  X-ray binary
+MAXI0903      30  -2.63  128  X-ray binary
+tau Boo        2  -2.20  832  exoplanet
+HerX1         45  -2.75  144  X-ray binary
+BD661051       4  -2.75  320  Euclid star
+TYC4208m452    8  -2.75  256  Euclid star
+
+01/03/22 clear
+1A0535         7  -2.53  192  X-ray binary
+HESS0632       5  -2.61  256  gammaray binary
+MAXI0903      30  -2.63  128  X-ray binary
+LYCMA          5  -2.56  192  X-ray binary
+tau Boo        2  -2.25  832  exoplanet
+HerX1         45  -2.82  144  X-ray binary
+
+02/03/22  strong wind, humidity 50 - 60%
+
+OJ287         30  -2.80   60  AGN   
+           stopped due to strong wind  
+
+03/03/22 
+
+HerX1         45  -2.90  128  X-ray binary
+4U1543        45  -2.95   64  X-ray binary
+
+04/03/22 clear
+
+1A0535         7  -2.68  192  X-ray binary
+HESS0632       5  -2.76  256  gammaray binary
+MAXI0903      30  -2.80  128  X-ray binary
+LYCMA          5  -2.80  192  X-ray binary
+OJ 287        30  -2.80   88    AGN
+tau Boo        2  -2.30  832  exoplanet
+HerX1         45  -2.80  128  X-ray binary
+4U1543        45  -2.82  128  X-ray binary
+
+05/03/22 clear
+
+1A0535         7  -2.52  192  X-ray binary
+HESS0632       5  -2.56  256  gammaray binary
+MAXI0903      30  -2.64  116  X-ray binary
+LYCMA          5  -2.60  192  X-ray binary
+tau Boo        2  -2.27  960  exoplanet
+HerX1         45  -2.92  160  X-ray binary
+4U1543        45  -2.83  128  X-ray binary
+
+06/03/22 cloudy, moon
+
+1A0535         7  -2.52  132  X-ray binary
+close due to the clouds
+tau Boo        2  -2.30  688  exoplanet
+
+07/03/22 cloudy
+
+tau Boo        2  -2.35  192  exoplanet
+stopped due to clouds
+
+08/03/22   
+
+OJ 287        30  -2.65   64    AGN
+         stopped due to PH% rise.
+
+09/03/22
+
+tau Boo        2  -2.22  832  exoplanet
+HerX1         45  -2.84  128  X-ray binary
+Mkn501        30  -2.80   96  bllac AGN
+
+
+10/03/22 cloudy, moon
+
+1A0535         7  -2.52  192  X-ray binary
+HESS0632       5  -2.56  256  gammaray binary
+LYCMA          5  -2.60  256  X-ray binary
+MAXI0903      30  -2.67  128  X-ray binary
+tau Boo        2  -2.27  832  exoplanet
+HerX1         45  -2.77  192  X-ray binary
+
+11/03/22  clear, Moon
+
+OJ 287        30  -2.60   80  AGN 
+
+
+12/03/22  clear, Moon
+
+1A0535        5   -2.50  128  x-ray binary
+MAXI0903      30  -2.67  76   X-ray binary
+finished due to poor seeing
+LYCMa         5   -2.65  128  x-ray binary
+tau Boo       2   -2.27  832  exoplanet
+HerX1         45  -2.80  192  X-ray binary
+
+
+13/03/22  clear, Moon
+
+1A0535        5   -2.50  160  x-ray binary
+HESS0632      5   -2.60  256  gammaray binary
+LYCMa         5   -2.65  160  x-ray binary
+tau Boo       2   -2.27  832  exoplanet
+HerX1         45  -2.77  192  X-ray binary
+CygX1         5   -2.77  128  X-ray binary
+
+14/03/22
+
+tau Boo       2   -2.07  832  exoplanet
+stpped due to clouds
+
+15/03/22
+
+tau Boo       2   -2.10  832  exoplanet
+HerX1         45  -2.70  96   X-ray binary
+stopped due to high %RH
+CygX1         5   -2.60  144  X-ray binary
+
+16/03/22  thin clouds, full moon 
+
+1A0535        7   -2.36  128  x-ray binary
+HESS0632      5   -2.40  256  gammaray binary
+moon is too bright for MAXI
+LYCMa         5   -2.49  192  x-ray binary
+tau Boo       2   -2.15  832  exoplanet
+HerX1         45  -2.72  128  X-ray binary
+
+
+18/03/22  clear, full moon 
+
+1A0535        7   -2.36  192  x-ray binary
+HESS0632      5   -2.40  256  gammaray binary
+LYCMa         5   -2.49  192  x-ray binary
+tau Boo       2   -2.07  832  exoplanet
+HerX1         45  -2.65  128  X-ray binary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+           
+
+
+
+
+
+
+
+
+
+
 
 
 
